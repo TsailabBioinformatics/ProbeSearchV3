@@ -12,7 +12,10 @@ This app consists of a form, which allows the user to input a primer/probe/gRNA 
 `git clone https://github.com/TsailabBioinformatics/ProbeSearchV3`
 
 2. Travel to the parent project directory and install the required node packages. \
-`npm install` 
+`npm install` \
+Then change into the frontend `vue/` directory, and install its packages. \
+`cd vue/` \
+`npm install`
 
 3. Transfer the `data/` and `indices/` directories to the parent directory. This may take a while. \
 `rsync -av webserver@128.192.158.63:~/probesearch/data ./` \

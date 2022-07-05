@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "express": "^4.17.3",
+    "vue-dndrop": "^1.2.2",
+    "vue-multiselect": "^2.1.6"
+  }
+}

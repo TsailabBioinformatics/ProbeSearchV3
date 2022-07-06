@@ -19,25 +19,10 @@ export default {
   },
   data() {
     return {
-      count: 1,      // number of alignment results 
-      results: [`input read:	AGCCACATGGCTCAATGGGAGAGTGCTCGACTAGAGGCCGAAGCCA
-read length:	46
-database:	717V5
-
-target 1 - T08 : 5390892 (+)
-    Q:	AGCCACATGGCTCAATGGGAGAGTGCTCGACTAGAGGCCGAAGCCA
-    	||||||||||||||||||||||||||||||||||||||||||||||
-    T:	AGCCACATGGCTCAATGGGAGAGTGCTCGACTAGAGGCCGAAGCCA
-total mismatches: 0
-
-target 2 - A08 : 5554895 (+)
-    Q:	AGCCACATGGCTCAATGGGAGAGTGCTCGACTAGAGGCCGAAGCCA
-    	||||||||||||||||||||||||||||||||||||||||||||||
-    T:	AGCCACATGGCTCAATGGGAGAGTGCTCGACTAGAGGCCGAAGCCA
-total mismatches: 0
-`],   // array of result data
-      show: 1,        // result to show
-      focused: false
+      count: 0,      // number of alignment results 
+      results: [],   // array of result data
+      show: 0,        // result to show
+      fullscreen: false  // full-screen mode
     }
   },
   methods: {
@@ -53,21 +38,21 @@ total mismatches: 0
       } // for
       this.show = 1; // show the first result
     },
-    focus_view() {
+    full_screen() {
       const page = document.getElementById('page');
       page.classList.add('focused');
       const main = document.getElementById('main');
       main.classList.add("blur");
-      this.focused = true;
-      window.scrollTo(0, 0);
+      this.fullscreen = true;
+      window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     },
-    unfocus_view() {
+    minimize_screen() {
       const main = document.getElementById('main');
       main.classList.remove("blur");
       const page = document.getElementById('page');
       page.classList.remove('focused');
-      this.focused = false;
-      window.scrollTo(0, 0);
+      this.fullscreen = false;
+      window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     }
   }
 }
@@ -81,11 +66,11 @@ total mismatches: 0
       <SequenceForm ref="form" v-on:valid="run()" />
       <div v-for="n in this.count" :key=n v-show="n === this.show">
         <AlignmentResult :id=n :data="results[n - 1]" :total="this.count"
-                         v-on:swap-left="this.show--" v-on:swap-right="this.show++" v-on:expand="focus_view()" /> 
+                         v-on:swap-left="this.show--" v-on:swap-right="this.show++" v-on:expand="full_screen()" /> 
       </div>
     </div>
-    <FocusedResult v-if="this.focused == true" :id="this.show" :data="results[this.show - 1]"
-                   v-on:contract="unfocus_view()" /> 
+    <FocusedResult v-if="this.fullscreen == true" :id="this.show" :data="results[this.show - 1]"
+                   v-on:contract="minimize_screen()" /> 
   </div>
 </template>
 
@@ -128,6 +113,7 @@ total mismatches: 0
     font-weight: normal;
     align-self: center;
     align-items: flex-start;
+    scrollbar-width: auto; 
   }
  .main {
     place-items: flex-start; 

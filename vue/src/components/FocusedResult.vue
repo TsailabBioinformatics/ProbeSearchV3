@@ -43,8 +43,8 @@
 
 .contract {
     position: absolute;
-    right: 2px;
-    top: 2px;
+    right: 6px;
+    top: 6px;
 }
 .contract:hover {
     cursor: pointer;
@@ -54,7 +54,9 @@
 
 @media (min-width: 1024px) {
     .parent {
-      margin: 5vh 5vw 15% 5vw;
+      padding: 2rem 4rem 2rem 4rem;
+      margin: 5vh 5vw 5vh 5vw;
+      
     }
 }
 

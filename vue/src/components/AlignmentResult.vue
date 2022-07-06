@@ -6,14 +6,11 @@
       swapleft() {this.$emit("swap-left") },
       swapright() { this.$emit("swap-right") },
       reload() { 
+        
         window.location.reload();
-        window.scrollTo(0, 0);
+        window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
       },
-      expand() {
-        // emit signal to app, instantiating new component
-        // edit current component
-        this.$emit("expand")
-      },
+      expand() { this.$emit("expand") },
       download() { // TODO 
       }
     },

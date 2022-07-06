@@ -54,7 +54,7 @@ app.put('/',  async (req, res) => {
  * @param sam SAM file  
  */
 function parse(sequence, db, sam) {
-    res = "input read:\t" + sequence + "\nread length:\t" + sequence.length + "\ndatabase:\t" + String(db) + "\n\n"; // instatiate string
+    res = ""; // instatiate string
     sam = sam.split("\n");
     for (var i = 0; i < sam.length - 1; i++) {
         target = sam[i].split("\t");

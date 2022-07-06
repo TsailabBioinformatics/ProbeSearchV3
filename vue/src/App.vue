@@ -1,10 +1,3 @@
-<!-- 
-  ProbeSearchV3!
-    TODO
-      - Netlify Large Media -> git LFS || deploy via in-house server
-      - download results component 
--->
-
 <script>
 import SequenceForm from './components/SequenceForm.vue'
 import AlignmentResult from './components/AlignmentResult.vue'
@@ -20,8 +13,9 @@ export default {
   data() {
     return {
       count: 0,      // number of alignment results 
-      results: [],   // array of result data
-      show: 0,        // result to show
+      results: [],   // result data
+      headers: [],   // result headers
+      show: 0,       // result to show
       fullscreen: false  // full-screen mode
     }
   },
@@ -34,7 +28,12 @@ export default {
             db: this.$refs.form.$data.db[`${i}`]
         };
         const res = await axios.put('/', payload);
-        this.results[i] = res.data; // populate alignment results
+        /* make header */
+        this.headers[i] = ("input read: " + this.$refs.form.$data.read + "\n" + 
+                          "read length: " + this.$refs.form.$data.read.length + "\n" + 
+                          "database: " + this.$refs.form.$data.db[`${i}`] + "\n");
+        /* populate alignment results */
+        this.results[i] = res.data; 
       } // for
       this.show = 1; // show the first result
     },
@@ -65,7 +64,7 @@ export default {
 
       <SequenceForm ref="form" v-on:valid="run()" />
       <div v-for="n in this.count" :key=n v-show="n === this.show">
-        <AlignmentResult :id=n :data="results[n - 1]" :total="this.count"
+        <AlignmentResult :id=n :data="results[n - 1]" :total="this.count" :header="headers[n - 1]"
                          v-on:swap-left="this.show--" v-on:swap-right="this.show++" v-on:expand="full_screen()" /> 
       </div>
     </div>
@@ -76,50 +75,52 @@ export default {
 
 <style>
 @import './assets/base.css';
+
 #app {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  align-items: start;
-  overflow: auto;
-  -ms-overflow-style: none; /* for Internet Explorer, Edge */
-  scrollbar-width: none; 
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: start;
+    overflow: auto;
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; 
 }
 .main {
-  display: flex; 
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center;
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
 }
 .focused {
-  display: grid;
-  width: 100vw;
-  min-height: 100vh;
+    display: grid;
+    width: 100vw;
+    min-height: 100vh;
 }
 .blur {
-  display: none;
+    display: none;
 }
+
 @media (min-width: 1024px) {
-  body {
+body {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-  }
-  span:hover {
+}
+span:hover {
     cursor: pointer;
-  }
-  #app {
+}
+#app {
     background-color: transparent;
     font-weight: normal;
     align-self: center;
     align-items: flex-start;
     scrollbar-width: auto; 
-  }
- .main {
+}
+.main {
     place-items: flex-start; 
     flex-wrap: wrap;
-  }
-}
+} }
+
 </style>
 
 

@@ -2,21 +2,24 @@
 import SequenceForm from './components/SequenceForm.vue'
 import AlignmentResult from './components/AlignmentResult.vue'
 import FocusedResult from './components/FocusedResult.vue'
+import Deck from './components/Deck.vue'
 import axios from 'axios'
 export default {
   name: "Home",
   components: {
     SequenceForm,
     AlignmentResult,
-    FocusedResult
+    FocusedResult,
+    Deck
   },
   data() {
     return {
-      count: 0,      // number of alignment results 
+      count: 1,      // number of alignment results 
       results: [],   // result data
       headers: [],   // result headers
-      show: 0,       // result to show
-      fullscreen: false  // full-screen mode
+      show: 1,       // result to show
+      fullscreen: false,  // full-screen mode
+      deck: false
     }
   },
   methods: {
@@ -42,6 +45,7 @@ export default {
       page.classList.add('focused');
       const main = document.getElementById('main');
       main.classList.add("blur");
+      /* this.fullscreen = true; */
       this.fullscreen = true;
       window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     },
@@ -65,11 +69,15 @@ export default {
       <SequenceForm ref="form" v-on:valid="run()" />
       <div v-for="n in this.count" :key=n v-show="n === this.show">
         <AlignmentResult :id=n :data="results[n - 1]" :total="this.count" :header="headers[n - 1]"
-                         v-on:swap-left="this.show--" v-on:swap-right="this.show++" v-on:expand="full_screen()" /> 
+                         v-on:swap-left="this.show--" v-on:swap-right="this.show++" v-on:expand="full_screen()"
+                         v-on:deck="get_deck()" /> 
       </div>
     </div>
+    <!-- background components, toggled by AlignmentResult -->
     <FocusedResult v-if="this.fullscreen == true" :id="this.show" :data="results[this.show - 1]"
                    v-on:contract="minimize_screen()" /> 
+    <Deck v-if="this.deck == true" :count="this.count" :headers="headers" :results="results"
+          v-on:back="minimize_screen()" />
   </div>
 </template>
 

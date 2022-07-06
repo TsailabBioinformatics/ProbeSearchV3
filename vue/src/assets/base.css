@@ -68,7 +68,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-p, h3, input, label, textarea {
+p, h1, h3, input, label, textarea {
     font-family: 'DM Mono', monospace;
     color: var(--vt-c-black-mute);
 }

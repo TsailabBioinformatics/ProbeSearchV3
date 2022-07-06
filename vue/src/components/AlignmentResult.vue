@@ -12,7 +12,7 @@
       expand() { this.$emit("expand") },
       download() { /* TODO */ }
     },
-    emits: ["swap-left", "swap-right", "expand"]
+    emits: ["swap-left", "swap-right", "expand", "deck"]
   }
 </script>
 
@@ -22,6 +22,8 @@
 
     <p class="expand" @click="expand()"> ⛶ </p>
     <p class="instruction"> maximize </p>
+    <p class="cards" @click="expand()"> 🂠 </p>
+    <p class="instruction"> card deck </p>
     <div class="header"> 
         <div>
           <p class="swap-left" v-if="id > 1" @click="swapleft()"> &lt; </p> <p v-else> &nbsp; </p> 
@@ -112,12 +114,17 @@
     right: -50px;
     bottom: 15px;
 }
+.cards {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+}
 .expand {
     position: absolute;
     right: 2px;
     top: 2px;
 }
-.swap-left:hover, .swap-right:hover, .search-again:hover, .expand:hover, .download:hover {
+.swap-left:hover, .swap-right:hover, .search-again:hover, .expand:hover, .cards:hover, .download:hover {
     cursor: pointer;
 }
 p {
@@ -177,6 +184,19 @@ p {
     position: absolute;
     right: -50px;
     top: -25px;
+} 
+.cards:hover + .instruction {
+    display: flex;
+    padding: 5px;
+    width: 70px;
+    font-size: 10px;
+    text-align: center;
+    color: rgba(60, 60, 60, 0.66);
+    background-color: rgba(247, 247, 247, 0.90);
+    border: 1px solid var(--color-background);
+    position: absolute;
+    right: -50px;
+    bottom: -25px;
 } }
 
 </style>

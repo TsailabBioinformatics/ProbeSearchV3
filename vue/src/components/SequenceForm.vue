@@ -37,12 +37,12 @@
 
     <div style="display: flex; justify-content: center; margin: 0;"><a href="http://aspendb.uga.edu/"><img src="../assets/aspendb_bw2.png" style="opacity: 0.9" width="100" height="60  "/></a></div>
     <div class="divider"></div> 
-    <p>
+    <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">
       input primer/probe/gRNA sequence
     </p>
     <textarea rows="2" placeholder="GGGTTCTGCCAATTTAAGCCACATGGCTCAATGGGAGA" v-model="read"></textarea> 
-    <p> 
-      select a database
+    <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2"> 
+      select database(s)
     </p>
 
     <div style="display: flex; flex-direction: column;">
@@ -152,10 +152,10 @@ button:hover {
 .parent {
     width: 70vw; 
     margin: 5% 3% 2% 3%;
-    padding: 1rem 4rem 2rem 4rem;
+    padding: 1rem 7rem 2rem 7rem;
     opacity: .95;
     box-shadow: 0px 0px 1px 0px var(--color-background); 
-    border-radius: 2px;
+    border-radius: 3px;
 }
 .checkboxes {
     margin: 0;

@@ -17,9 +17,10 @@ export default {
       count: 0,      // number of alignment results 
       results: [],   // result data
       headers: [],   // result headers
+      dbnames: [],   // database names (to pass to cards)
       show: 0,       // result to show
       fullscreen: false,  // full-screen mode
-      deck: false
+      deck: false         // card deck mode
     }
   },
   methods: {
@@ -33,8 +34,10 @@ export default {
         const res = await axios.put('/', payload);
         /* make header */
         this.headers[i] = ("input read:\t\t" + this.$refs.form.$data.read + "\n" + 
-                          "read length:\t" + this.$refs.form.$data.read.length + "\n" + 
-                          "database:\t\t" + this.$refs.form.$data.db[`${i}`] + "\n");
+                           "read length:\t" + this.$refs.form.$data.read.length + "\n" + 
+                           "database:\t\t" + this.$refs.form.$data.db[`${i}`] + "\n");
+        /* get database names */
+        this.dbnames[i] = this.$refs.form.$data.db[`${i}`];
         /* populate alignment results */
         this.results[i] = res.data; 
       } // for
@@ -75,9 +78,9 @@ export default {
       </div>
     </div>
     <!-- background components, toggled by AlignmentResult -->
-    <FocusedResult v-if="this.fullscreen == true" :id="this.show" :data="results[this.show - 1]"
-                   v-on:back  ="minimize_screen()" /> 
-    <Deck v-if="this.deck == true" :count="this.count" :headers="headers" :results="results"
+    <FocusedResult v-if="this.fullscreen == true" :header="headers[this.show - 1]" :data="results[this.show - 1]"
+                   v-on:back="minimize_screen()" /> 
+    <Deck v-if="this.deck == true" :count="this.count" :dbnames="dbnames" :headers="headers" :results="results" 
           v-on:back="minimize_screen()" />
   </div>
 </template>
@@ -132,91 +135,3 @@ span:hover {
 } }
 
 </style>
-
-
-
-
-
-<!-- 
-  CODE
-      dynamically adding forms 
-
-      for (var i = 0; i <= this.extra; i++) {
-
-        if (i === 0) {
-            const payload = {
-              read: this.$refs[`${i}`].$data.read,
-                db: this.$refs[`${i}`].$data.db
-              };
-            const res = await axios.put('/', payload);
-            this.showres = true
-            this.res += `Search Result ${i+1}\n-----------------\n`
-            this.res += res.data + '\n';
-        } else {
-            console.log(this.$refs[`${i}`][0].$data.read);
-            const payload = {
-              read: this.$refs[`${i}`][0].$data.read,
-              db: this.$refs[`${i}`][0].$data.db
-              };
-            const res = await axios.put('/', payload);
-            this.res += `Search Result ${i+1}\n-----------------\n`
-
-            this.res += res.data + '\n';
-        } // if/else
-
-      } // for
-
-      <div v-for="i in extra" :key="i">
-        <SequenceForm :ref="`${i}`" :mainform="false" v-on:subtract-form="this.extra--"/>
-      </div>
-      v-on:add-form="this.extra++"
-
-      .add-form {
-        color: darkgrey;
-        position: absolute;
-        right: 100px; 
-        bottom: 100px;
-        cursor: pointer;
-      }
-      .hidden-instructions {
-        display: none;
-      }
-      .add-form:hover + .hidden-instructions {
-        display: flex;
-        padding: 5px;
-        width: 110px;
-        font-size: 10px;
-        text-align: center;
-        color: rgba(60, 60, 60, 0.66);
-        background-color: rgba(247, 247, 247, 0.90);
-        border: 1px solid hsla(160, 100%, 37%, 1);
-        position: absolute;
-        right: -6.5px;
-        bottom: -25px;
-      }
-
-
-    .add-form {
-      color: darkgrey;
-      position: absolute;
-      right: 10px; 
-      bottom: 0;
-    }
-    .add-form:hover {
-      cursor: pointer;
-    }
-    .hidden-instructions {
-      color: red;
-    }
-    .add-form:hover + .hidden-instructions {
-      display: flex;
-      color: red;
-    }
-    */
-    /*
-    @media (hover: hover) {
-      a:hover {
-        background-color: hsla(160, 100%, 37%, 0.2);
-      }
-    }
--->

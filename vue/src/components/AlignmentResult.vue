@@ -153,7 +153,7 @@ p {
     padding: 2rem 4rem 2rem 4rem;
     opacity: .95;
     box-shadow: 0px 0px 1px 0px var(--color-background); 
-    border-radius: 2px;
+    border-radius: 3px;
 }
 .header {
   margin-bottom: 2%;

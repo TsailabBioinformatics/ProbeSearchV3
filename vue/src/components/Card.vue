@@ -1,13 +1,11 @@
 <script>
   export default {
     name: "Card",
-    props: ['header', 'result'],
+    props: ['title', 'id', 'header', 'result'],
     methods: {
-      contract() {
-        this.$emit("peek")
-      },
+      maximize() { this.$emit("fullscreen") }
     },
-    emits: []
+    emits: ["fullscreen"]
   }
 </script>
 
@@ -16,9 +14,9 @@
 
   
 
-  <div class="card">
+  <div class="card" @click="maximize()">
 
-        <h3> {{ header }} </h3>
+        <h3> {{ title }} </h3>
     
   </div>
 
@@ -28,14 +26,21 @@
 <style scoped>
 
 .card {
-    width: 250px;
-    height: 250px;
-    margin: 0 2%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 225px;
+    height: 275px;
+    margin: 0 1% 1% 1%;
     padding: 2%;
     background-color: #fbfbfb;
     opacity: .95;
     box-shadow: 0px 0px 1px 0px var(--color-background); 
-    border-radius: 2px;
+    border-radius: 3px;
+}
+.card:hover {
+  background-color: #f2f2f2;
+  cursor: pointer;
 }
 .contract {
     position: absolute;

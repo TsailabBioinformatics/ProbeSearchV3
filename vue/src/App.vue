@@ -14,10 +14,10 @@ export default {
   },
   data() {
     return {
-      count: 1,      // number of alignment results 
+      count: 0,      // number of alignment results 
       results: [],   // result data
       headers: [],   // result headers
-      show: 1,       // result to show
+      show: 0,       // result to show
       fullscreen: false,  // full-screen mode
       deck: false
     }
@@ -32,21 +32,21 @@ export default {
         };
         const res = await axios.put('/', payload);
         /* make header */
-        this.headers[i] = ("input read: " + this.$refs.form.$data.read + "\n" + 
-                          "read length: " + this.$refs.form.$data.read.length + "\n" + 
-                          "database: " + this.$refs.form.$data.db[`${i}`] + "\n");
+        this.headers[i] = ("input read:\t\t" + this.$refs.form.$data.read + "\n" + 
+                          "read length:\t" + this.$refs.form.$data.read.length + "\n" + 
+                          "database:\t\t" + this.$refs.form.$data.db[`${i}`] + "\n");
         /* populate alignment results */
         this.results[i] = res.data; 
       } // for
       this.show = 1; // show the first result
     },
-    full_screen() {
+    switch_screen(screen) {
       const page = document.getElementById('page');
       page.classList.add('focused');
       const main = document.getElementById('main');
       main.classList.add("blur");
-      /* this.fullscreen = true; */
-      this.fullscreen = true;
+      if (screen === "fullscreen") { this.fullscreen = true; }
+      else { this.deck = true; }
       window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     },
     minimize_screen() {
@@ -55,6 +55,7 @@ export default {
       const page = document.getElementById('page');
       page.classList.remove('focused');
       this.fullscreen = false;
+      this.deck = false;
       window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     }
   }
@@ -69,17 +70,18 @@ export default {
       <SequenceForm ref="form" v-on:valid="run()" />
       <div v-for="n in this.count" :key=n v-show="n === this.show">
         <AlignmentResult :id=n :data="results[n - 1]" :total="this.count" :header="headers[n - 1]"
-                         v-on:swap-left="this.show--" v-on:swap-right="this.show++" v-on:expand="full_screen()"
-                         v-on:deck="get_deck()" /> 
+                         v-on:swap-left="this.show--" v-on:swap-right="this.show++" 
+                         v-on:fullscreen="switch_screen(`fullscreen`)" v-on:deck="switch_screen(`deck`)" /> 
       </div>
     </div>
     <!-- background components, toggled by AlignmentResult -->
     <FocusedResult v-if="this.fullscreen == true" :id="this.show" :data="results[this.show - 1]"
-                   v-on:contract="minimize_screen()" /> 
+                   v-on:back  ="minimize_screen()" /> 
     <Deck v-if="this.deck == true" :count="this.count" :headers="headers" :results="results"
           v-on:back="minimize_screen()" />
   </div>
 </template>
+
 
 <style>
 @import './assets/base.css';

@@ -3,12 +3,12 @@
     name: "FocusedResult",
     props: ['data', 'id'],
     methods: {
-      contract() {
-        this.$emit("contract")
+      minimize() {
+        this.$emit("back")
       },
       download() { /* TODO */ }
     },
-    emits: ["contract"]
+    emits: ["back"]
   }
 </script>
 
@@ -17,10 +17,10 @@
 
   <div class="parent">
 
-        <p class="contract" @click="contract()"> ⛶ </p>
+        <p class="minimize" @click="minimize()"> ⛶ </p>
         <p class="instruction"> minimize </p>
         <pre>
-            <p>{{data}}</p>
+            <p style="font-family: 'DM Mono', monospace; font-size: 16px">{{data}}</p>
         </pre>
     
   </div>
@@ -37,15 +37,14 @@
     padding: 2rem 4rem 2rem 4rem;
     background-color: #fbfbfb;
     box-shadow: 0px 0px 1px 0px var(--color-background); 
-    border: 1px solid var(--vt-c-black-mute);
     border-radius: 2px;
 }
-.contract {
+.minimize {
     position: absolute;
     right: 6px;
     top: 6px;
 }
-.contract:hover {
+.minimize:hover {
     cursor: pointer;
 }
 .instruction {
@@ -57,18 +56,18 @@
     padding: 2rem 4rem 2rem 4rem;
     margin: 5vh 5vw 5vh 5vw;
 } 
-.contract:hover + .instruction {
+.minimize:hover + .instruction {
     display: flex;
     padding: 5px;
-    width: 60px;
+    width: 50px;
     font-size: 10px;
     text-align: center;
     color: rgba(60, 60, 60, 0.66);
-    background-color: rgba(247, 247, 247, 0.90);
-    border: 1px solid var(--color-background);
+    background-color: rgba(247, 247, 247, 1);
     position: absolute;
     right: -40px;
     top: -25px;
+    box-shadow: 0px 0px 1px 0px var(--color-background); 
 } }
 
 </style>

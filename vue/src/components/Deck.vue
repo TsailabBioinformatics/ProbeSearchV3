@@ -18,7 +18,7 @@
 
 <template>
   <div style="width: 100%"> 
-    <h1 class="goback" @click="goback()"> ← </h1>
+    <h3 class="goback" @click="goback()"> ← </h3>
     <p class="instruction"> go back </p>  
   </div>
 
@@ -66,12 +66,12 @@
 .goback:hover + .instruction {
     display: flex;
     padding: 5px;
-    width: 60px;
+    width: 50px;
     font-size: 10px;
     text-align: center;
     color: rgba(60, 60, 60, 0.66);
     background-color: rgba(247, 247, 247, 0.90);
-    border: 1px solid var(--color-background);
+    box-shadow: 0px 0px 1px 0px var(--color-background); 
     position: absolute;
     left: 40px;
     top: 5px;

@@ -95,7 +95,6 @@
 p {
     margin: 1% 2% 1% 2%;
     font-size: 14px;
-    font-weight: 300;
 }
 textarea {
     width: 96%;
@@ -129,7 +128,6 @@ button:hover {
     flex-shrink: 0;
     margin: 4%;
     background-color: #fbfbfb;
-    border: 1px solid var(--vt-c-black-mute);
 }
 .divider {
     width: 100%; 
@@ -164,8 +162,7 @@ button:hover {
 }
 p {
     margin: 1% 0 1% 0;
-    font-size: 16px;
-    font-weight: 300;
+    font-size: 18px;
 }
 textarea {
     width: 100%;
@@ -181,6 +178,7 @@ input {
 }
 label {
     color: var(--vt-c-black-mute);
+    font-size: 16px;
 }
 button {
     width: 25%;

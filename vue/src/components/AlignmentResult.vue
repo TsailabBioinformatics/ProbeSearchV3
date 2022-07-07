@@ -9,10 +9,11 @@
         window.location.reload();
         window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
       },
-      expand() { this.$emit("expand") },
+      maximize() { this.$emit("fullscreen") },
+      get_deck() { this.$emit("deck") },
       download() { /* TODO */ }
     },
-    emits: ["swap-left", "swap-right", "expand", "deck"]
+    emits: ["swap-left", "swap-right", "fullscreen", "deck"]
   }
 </script>
 
@@ -20,9 +21,9 @@
 <template>
   <div class="parent">
 
-    <p class="expand" @click="expand()"> ⛶ </p>
+    <p class="maximize" @click="maximize()"> ⛶ </p>
     <p class="instruction"> maximize </p>
-    <p class="cards" @click="expand()"> 🂠 </p>
+    <p class="cards" @click="get_deck()"> 🂠 </p>
     <p class="instruction"> card deck </p>
     <div class="header"> 
         <div>
@@ -36,12 +37,12 @@
         </div>
     </div>
 
-    <pre style="white-space: pre-line;">
+    <pre style="white-space: pre;">
         <h3><b>{{header}}</b></h3>
     </pre>
     <div class="divider"></div> 
     <pre>
-        <p>{{data}}</p>
+        <p style="font-family: 'DM Mono', monospace; font-size: 16px">{{data}}</p>
     </pre>
 
     <div class="footer">
@@ -62,7 +63,6 @@
     flex-shrink: 0;
     margin: 0;
     background-color: #fbfbfb;
-    border: 1px solid var(--vt-c-black-mute);
 }
 .header {
     display: flex;
@@ -73,7 +73,7 @@
     width: 100%; 
     border: 1px solid var(--vt-c-black-mute); 
     border-bottom-style: none; 
-    margin: 0;
+    margin: 0 0 2% 0;
 }
 .footer {
     display: flex;
@@ -95,11 +95,11 @@
     font-size: 8px;
     text-align: center;
     color: rgba(60, 60, 60, 0.66);
-    background-color: rgba(247, 247, 247, 0.90);
-    border: 1px solid var(--color-background);
+    background-color: rgba(247, 247, 247, 1);
     position: absolute;
     left: -50px;
     bottom: 15px;
+    box-shadow: 0px 0px 1px 0px var(--color-background); 
 }
 .swap-right:hover + .instruction {
     display: flex;
@@ -108,29 +108,28 @@
     font-size: 8px;
     text-align: center;
     color: rgba(60, 60, 60, 0.66);
-    background-color: rgba(247, 247, 247, 0.90);
-    border: 1px solid var(--color-background);
+    background-color: rgba(247, 247, 247, 1);
     position: absolute;
     right: -50px;
     bottom: 15px;
+    box-shadow: 0px 0px 1px 0px var(--color-background); 
 }
 .cards {
     position: absolute;
     right: 2px;
     bottom: 2px;
 }
-.expand {
+.maximize {
     position: absolute;
     right: 2px;
     top: 2px;
 }
-.swap-left:hover, .swap-right:hover, .search-again:hover, .expand:hover, .cards:hover, .download:hover {
+.swap-left:hover, .swap-right:hover, .search-again:hover, .maximize:hover, .cards:hover, .download:hover {
     cursor: pointer;
 }
 p {
     margin: 1% 2%;
-    font-size: 10px;
-    font-weight: 200;
+    font-size: 12px;
 }
 button {
     width: 20%;
@@ -146,8 +145,7 @@ button {
 @media (min-width: 1024px) {
 p {
     margin: 5px;
-    font-size: 16px;
-    font-weight: 300;
+    font-size: 18px;
 }
 .parent {
     width: 70vw;
@@ -161,42 +159,42 @@ p {
   margin-bottom: 2%;
 }
 .swap-left:hover + .instruction {
-    width: 105px;
-    font-size: 10px;
+    width: 90px;
+    font-size: 12px;
     left: -75px;
     bottom: 25px;
 }
 .swap-right:hover + .instruction {
-    width: 80px;
-    font-size: 10px;
+    width: 65px;
+    font-size: 12px;
     right: -50px;
     bottom: 25px;
 } 
-.expand:hover + .instruction {
+.maximize:hover + .instruction {
     display: flex;
     padding: 5px;
     width: 60px;
-    font-size: 10px;
+    font-size: 12px;
     text-align: center;
     color: rgba(60, 60, 60, 0.66);
-    background-color: rgba(247, 247, 247, 0.90);
-    border: 1px solid var(--color-background);
+    background-color: rgba(247, 247, 247, 1);
     position: absolute;
     right: -50px;
     top: -25px;
+    box-shadow: 0px 0px 1px 0px var(--color-background); 
 } 
 .cards:hover + .instruction {
     display: flex;
     padding: 5px;
-    width: 70px;
-    font-size: 10px;
+    width: 65px;
+    font-size: 12px;
     text-align: center;
     color: rgba(60, 60, 60, 0.66);
-    background-color: rgba(247, 247, 247, 0.90);
-    border: 1px solid var(--color-background);
+    background-color: rgba(247, 247, 247, 1);
     position: absolute;
     right: -50px;
-    bottom: -25px;
+    bottom: -35px;
+    box-shadow: 0px 0px 1px 0px var(--color-background); 
 } }
 
 </style>

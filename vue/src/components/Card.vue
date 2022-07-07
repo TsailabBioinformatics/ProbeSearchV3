@@ -30,9 +30,9 @@
 .card {
     width: 250px;
     height: 250px;
-    margin: 0;
+    margin: 0 2%;
+    padding: 2%;
     background-color: #fbfbfb;
-    border: 1px solid var(--vt-c-black-mute);
     opacity: .95;
     box-shadow: 0px 0px 1px 0px var(--color-background); 
     border-radius: 2px;
@@ -47,6 +47,9 @@
 }
 .instruction {
     display: none;
+}
+p, h3 {
+  font-family: 'Oswald', sans-serif;
 }
 
 @media (min-width: 1024px) {

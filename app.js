@@ -89,7 +89,6 @@ function parse(sequence, db, sam) {
             break;
         } // if
     } // for
-    console.log(res)
     return res;
 } // parse 
 
@@ -182,7 +181,9 @@ function sort_sam(sam) {
     for (var i = 0; i < sam.length - 1; i++) {
         min = i;
         for (var j = i + 1; j < sam.length - 1; j++) {
-            if (parseInt(sam[j].split("\t")[2].substring(1, 3)) < parseInt(sam[min].split("\t")[2].substring(1, 3))) {
+            var x = sam[j].split("\t")[2]; // represents the chromosome in a row of the SAM file
+            var y = sam[min].split("\t")[2];
+            if (parseInt(x.substring(x.length - 2, x.length)) < parseInt(y.substring(y.length - 2, y.length))) {
                 min = j;
             }
         }

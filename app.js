@@ -36,7 +36,7 @@ app.put('/',  async (req, res) => {
     /**
      * calls bowtie2 
      */
-    exec('./bowtie/bowtie2 -x indices/' + String(req.body.db) + ' -k 30 -c ' + String(req.body.read) + '  --end-to-end --no-hd' , (error, stdout, stderr) => {
+    exec('./bowtie/bowtie2 -x indices/' + String(req.body.db) + ' -k 30 -c ' + String(req.body.read) + '  --very-sensitive --no-hd' , (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
         }
@@ -56,12 +56,17 @@ app.put('/',  async (req, res) => {
 function parse(sequence, db, sam) {
     res = ""; // instatiate string
     sam = sam.split("\n");
+    sam = sort_sam(sam); // sorts SAM chronologically 
     for (var i = 0; i < sam.length - 1; i++) {
         target = sam[i].split("\t");
         var strand = "+";
+        var complement = false;
         if (target[2] != "*") { // valid target
             if (target[1] === "16") {
                 strand = "-";
+            } else if (target[1] === "272") {
+                strand = "-";
+                complement = true;
             }
             res += "target " + String(i + 1) + " - " + target[2] + " : " + target[3] + " (" + strand + ")\n"; 
             /* parse SAM file - get CIGAR, read, and reference sequence */
@@ -73,6 +78,10 @@ function parse(sequence, db, sam) {
             if (strand === "-") {
                 read = read.split("").reverse().join("").replace("\n", ""); /* TODO: figure why we need to use 'replace()' here */
                 reference = reference.split("").reverse().join("").replace("\n", "");
+                if (complement === true) {
+                    read = comp(read);
+                    reference = comp(reference);
+                }
             }
             res += illustrate(cigar, read, reference); 
         } else {
@@ -115,11 +124,11 @@ function illustrate(cigar, read, reference) {
         if (letter === 'M') {
             ptr += nucleotides;
         } else if (letter === "I") {
-            var space = " ".repeat(nucleotides);
+            var space = "-".repeat(nucleotides);
             reference = reference.substring(0, ptr) + space + reference.substring(ptr, reference.length);
             ptr += nucleotides;
         } else if (letter === "D") {
-            var space = " ".repeat(nucleotides);
+            var space = "-".repeat(nucleotides);
             read = read.substring(0, ptr) + space + read.substring(ptr, read.length);
             ptr += nucleotides;
         }
@@ -145,16 +154,44 @@ function illustrate(cigar, read, reference) {
 
 } // illustrate
 
-function reverse(str) {
-    res = str.split("").reverse().join("")
+
+/**
+ * takes in a sequence and returns its base-pair complement 
+ * @param str input read or reference 
+ * @returns complement
+ */
+function comp(str) {
+    var res = "";
+    for (var i = 0; i < str.length; i++) {
+        if (str.charAt(i) === "A") { res += "T" }
+        else if (str.charAt(i) === "T") { res += "A"}
+        else if (str.charAt(i) === "C") { res += "G"}
+        else { res += "C"}
+    }
+    return res;
+} // comp
+
+
+/**
+ * sorts SAM files chronologically by chromosome coordinate 
+ * @param sam SAM file (array of rows)
+ * @returns sorted SAM file by coordinates 
+ */
+function sort_sam(sam) {
+    var min = 0;
+    for (var i = 0; i < sam.length - 1; i++) {
+        min = i;
+        for (var j = i + 1; j < sam.length - 1; j++) {
+            if (parseInt(sam[j].split("\t")[2].substring(1, 3)) < parseInt(sam[min].split("\t")[2].substring(1, 3))) {
+                min = j;
+            }
+        }
+        var temp = sam[min];
+        sam[min] = sam[i];
+        sam[i] = temp; 
+    }
+    return sam;
 }
-
-
-
-
-
-
-
 
 
 
@@ -181,10 +218,4 @@ cigar.substring(i, cigar.length).indexOf("D"), cigar.substring(i, cigar.length).
 cigar.substring(i, cigar.length).indexOf("S"), cigar.substring(i, cigar.length).indexOf("H"),
 cigar.substring(i, cigar.length).indexOf("P")); 
 
-*/
-
-
-/*
-code
-````
 */

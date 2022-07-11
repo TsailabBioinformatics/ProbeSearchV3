@@ -70,9 +70,10 @@ function parse(sequence, db, sam) {
             }
             res += "target " + String(i + 1) + " - " + target[2] + " : " + target[3] + " (" + strand + ")\n"; 
             /* parse SAM file - get CIGAR, read, and reference sequence */
-            var gene = get_gene(target[2], target[3]);
-            console.log(gene);
-            res += "gene: " + gene + "\n";
+            if (db === "717V5") {
+                var gene = get_gene(target[2], parseInt(target[3]), (parseInt(target[3]) + parseInt(sequence.length - 1)));
+                res += "gene: " + gene + "\n";
+            }
             cigar = target[5];
             read = target[9];
             reference = String(execSync('samtools faidx ' +  db_dictionary[db] + ' ' + target[2] + ":" + target[3] 
@@ -204,22 +205,62 @@ function sort_sam(sam) {
  * @param coord starting coordinate 
  * @returns gene model name 
  */
-function get_gene(chrom, coord) {
-    var chrom_table = String(execSync('grep ' + chrom + ' ./data/gv5h1h2.fullgene.table'));
-    chrom_table = chrom_table.split("\n");
-    var min = Math.abs(parseInt(coord) - parseInt(chrom_table[0].split("\t")[1]));
-    var gene = chrom_table[0].split("\t")[3];
+function get_gene(chrom, start_coord, end_coord) {
+    var chrom_table = String(execSync('grep ' + chrom + ' ./data/gv5h1h2.fullgene.table', (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+        }
+    })).split("\n");
+
+    var min = Math.abs(start_coord - parseInt(chrom_table[0].split("\t")[1]));
+    var hit = 0;
+    var gene = "";
+
     for (var i = 0; i < chrom_table.length; i++) {
         var chrom_row = chrom_table[i].split("\t");
-        if (Math.abs(parseInt(coord) - parseInt(chrom_row[1])) < min) { 
-            min = Math.abs(parseInt(coord) - parseInt(chrom_row[1]));
-            gene = String(chrom_row[3]);
+        /* find nearest coordinate */
+        if (Math.abs(start_coord - parseInt(chrom_row[1])) < min) { 
+            min = Math.abs(start_coord - parseInt(chrom_row[1]));
+            hit = i;
         }
-        if (Math.abs(parseInt(coord) - parseInt(chrom_row[2])) < min) { 
-            min = Math.abs(parseInt(coord) - parseInt(chrom_row[2]));
-            gene = String(chrom_row[3]);
+        if (Math.abs(start_coord - parseInt(chrom_row[2])) < min) { 
+            min = Math.abs(start_coord - parseInt(chrom_row[2]));
+            hit = i;
         }
-    } // for */
+        if (Math.abs(end_coord - parseInt(chrom_row[1])) < min) {
+            min = Math.abs(start_coord - parseInt(chrom_row[1]));
+            hit = i;
+        }
+        if (Math.abs(end_coord - parseInt(chrom_row[2])) < min) {
+            min = Math.abs(start_coord - parseInt(chrom_row[1]));
+            hit = i;
+        }
+    } // for 
+
+    /* determine where target hits */
+    hit_row = chrom_table[hit].split("\t");
+    if (end_coord < parseInt(hit_row[1])) { // intergenic 
+        gene = chrom_table[hit - 1].split("\t")[3] + " - " + chrom_table[hit].split("\t")[3];
+        // check if start pokes into previous hit - partial hit
+        if (start_coord <= parseInt(chrom_table[hit - 1].split("\t")[2])) {
+            gene = chrom_table[hit - 1].split("\t")[3];
+        }
+    } else if (start_coord > parseInt(hit_row[2])) { // intergenic 
+        gene = chrom_table[hit].split("\t")[3] + " - " + chrom_table[hit + 1].split("\t")[3];
+        // check if end pokes into next hit - partial hit
+        if (end_coord >= parseInt(chrom_table[hit + 1].split("\t")[1])) {
+            console.log("happens");
+            gene = chrom_table[hit + 1].split("\t")[3];
+        }
+    } else if (start_coord >= parseInt(hit_row[1]) && end_coord <= parseInt(hit_row[2])) { // perfect hit
+        gene = chrom_table[hit].split("\t")[3];
+    } else { // TODO
+        gene = chrom_table[hit].split("\t")[3];
+        console.log(start_coord, end_coord);
+        // console.log(chrom_table[hit - 1].split("\t")[1], chrom_table[hit - 1].split("\t")[2]); 
+        console.log(hit_row[1], hit_row[2]);
+        // console.log(chrom_table[hit + 1].split("\t")[1], chrom_table[hit + 1].split("\t")[2]);
+    }
     return gene;
 
 } // get_gene

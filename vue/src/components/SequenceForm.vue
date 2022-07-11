@@ -190,14 +190,17 @@ button {
 } }
 
 @media (min-width: 2048px) {
+.parent {
+    padding: 4rem 20rem 4rem 20rem;
+}
 .divider {
-    margin-bottom: 1%;
+    margin-bottom: 0;
 }
 textarea {
     width: 1000px;
 }
 button {
-    width: 15%;
+    width: 12.5%;
 }
 input {
     margin: 0.5%;

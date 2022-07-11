@@ -70,6 +70,9 @@ function parse(sequence, db, sam) {
             }
             res += "target " + String(i + 1) + " - " + target[2] + " : " + target[3] + " (" + strand + ")\n"; 
             /* parse SAM file - get CIGAR, read, and reference sequence */
+            var gene = get_gene(target[2], target[3]);
+            console.log(gene);
+            res += "gene: " + gene + "\n";
             cigar = target[5];
             read = target[9];
             reference = String(execSync('samtools faidx ' +  db_dictionary[db] + ' ' + target[2] + ":" + target[3] 
@@ -192,8 +195,34 @@ function sort_sam(sam) {
         sam[i] = temp; 
     }
     return sam;
-}
+} // sort_sam
 
+
+/**
+ * gets the gene model name from the gff3 file
+ * @param chrom chromosome 
+ * @param coord starting coordinate 
+ * @returns gene model name 
+ */
+function get_gene(chrom, coord) {
+    var chrom_table = String(execSync('grep ' + chrom + ' ./data/gv5h1h2.fullgene.table'));
+    chrom_table = chrom_table.split("\n");
+    var min = Math.abs(parseInt(coord) - parseInt(chrom_table[0].split("\t")[1]));
+    var gene = chrom_table[0].split("\t")[3];
+    for (var i = 0; i < chrom_table.length; i++) {
+        var chrom_row = chrom_table[i].split("\t");
+        if (Math.abs(parseInt(coord) - parseInt(chrom_row[1])) < min) { 
+            min = Math.abs(parseInt(coord) - parseInt(chrom_row[1]));
+            gene = String(chrom_row[3]);
+        }
+        if (Math.abs(parseInt(coord) - parseInt(chrom_row[2])) < min) { 
+            min = Math.abs(parseInt(coord) - parseInt(chrom_row[2]));
+            gene = String(chrom_row[3]);
+        }
+    } // for */
+    return gene;
+
+} // get_gene
 
 
 

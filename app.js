@@ -40,7 +40,7 @@ app.put('/',  async (req, res) => {
         if (error) {
           console.error(`exec error: ${error}`);
         }
-        // parse standard output for nice visualization
+        // parse standard output
         console.log(stdout);
         stdout = parse(String(req.body.read), String(req.body.db), stdout);
         res.send(stdout);
@@ -54,9 +54,9 @@ app.put('/',  async (req, res) => {
  * @param sam SAM file  
  */
 function parse(sequence, db, sam) {
-    res = ""; // instatiate string
+    res = ""; 
     sam = sam.split("\n");
-    sam = sort_sam(sam); // sorts SAM chronologically 
+    // sam = sort_sam(sam); // sorts SAM chronologically 
     for (var i = 0; i < sam.length - 1; i++) {
         target = sam[i].split("\t");
         var strand = "+";
@@ -68,7 +68,7 @@ function parse(sequence, db, sam) {
                 strand = "-";
                 complement = true;
             }
-            res += "target " + String(i + 1) + " - " + target[2] + " : " + target[3] + " (" + strand + ")\n"; 
+            res += target[2] + " : " + target[3] + " (" + strand + ")\n"; 
             /* parse SAM file - get CIGAR, read, and reference sequence */
             if (db === "717V5") {
                 var gene = get_gene(target[2], parseInt(target[3]), (parseInt(target[3]) + parseInt(sequence.length - 1)));
@@ -93,6 +93,9 @@ function parse(sequence, db, sam) {
             break;
         } // if
     } // for
+    if (db === "717V5") {
+        res = sort_res(res);
+    }
     return res;
 } // parse 
 
@@ -176,7 +179,7 @@ function comp(str) {
 
 
 /**
- * sorts SAM files chronologically by chromosome coordinate 
+ * sorts SAM files chronologically by chromosome coordinate,
  * @param sam SAM file (array of rows)
  * @returns sorted SAM file by coordinates 
  */
@@ -199,6 +202,35 @@ function sort_sam(sam) {
 } // sort_sam
 
 
+function sort_res(res) {
+    var targets = res.split("\n\n");
+    var sorted = [];
+    var min = 0;
+    
+    sorted[0] = new Array(0);
+    for (var i = 0; i < targets.length - 1; i++) {
+        var target_info = targets[i].split("\n");
+        var chromosome = target_info[0].split(" ")[0].substr(-2); 
+        var mismatch = target_info[5].substr(-1);
+        if (mismatch != min) {
+            sorted[mismatch] = new Array(0);
+            min = mismatch;
+        }
+        sorted[mismatch].push([chromosome, targets[i]]);
+    } // for
+    
+    var res = "";
+    for (var j = 0; j < sorted.length; j++) {
+        sorted[j] = sorted[j].sort();
+        for (var k = 0; k < sorted[j].length; k++) {
+            res += sorted[j][k][1] + "\n\n"
+        }
+    }
+    
+    return res;
+}
+
+
 /**
  * gets the gene model name from the gff3 file
  * @param chrom chromosome 
@@ -206,11 +238,7 @@ function sort_sam(sam) {
  * @returns gene model name 
  */
 function get_gene(chrom, start_coord, end_coord) {
-    var chrom_table = String(execSync('grep ' + chrom + ' ./data/gv5h1h2.fullgene.table', (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-        }
-    })).split("\n");
+    var chrom_table = String(execSync('grep ' + chrom + ' ./data/gv5h1h2.fullgene.table')).split("\n");
 
     var min = Math.abs(start_coord - parseInt(chrom_table[0].split("\t")[1]));
     var hit = 0;
@@ -249,7 +277,6 @@ function get_gene(chrom, start_coord, end_coord) {
         gene = chrom_table[hit].split("\t")[3] + " - " + chrom_table[hit + 1].split("\t")[3];
         // check if end pokes into next hit - partial hit
         if (end_coord >= parseInt(chrom_table[hit + 1].split("\t")[1])) {
-            console.log("happens");
             gene = chrom_table[hit + 1].split("\t")[3];
         }
     } else if (start_coord >= parseInt(hit_row[1]) && end_coord <= parseInt(hit_row[2])) { // perfect hit
@@ -257,9 +284,7 @@ function get_gene(chrom, start_coord, end_coord) {
     } else { // TODO
         gene = chrom_table[hit].split("\t")[3];
         console.log(start_coord, end_coord);
-        // console.log(chrom_table[hit - 1].split("\t")[1], chrom_table[hit - 1].split("\t")[2]); 
         console.log(hit_row[1], hit_row[2]);
-        // console.log(chrom_table[hit + 1].split("\t")[1], chrom_table[hit + 1].split("\t")[2]);
     }
     return gene;
 

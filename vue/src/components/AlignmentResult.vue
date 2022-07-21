@@ -38,11 +38,12 @@
     </div>
 
     <pre style="white-space: pre;">
-        <h3><b>{{header}}</b></h3>
+        <h3 class="header-words"><b>{{header}}</b>
+only the top 50 hits are shown</h3>
     </pre>
     <div class="divider"></div> 
     <pre>
-        <p style="font-family: 'DM Mono', monospace; font-size: 16px">{{data}}</p>
+        <p class="res">{{data}}</p>
     </pre>
 
     <div class="footer">
@@ -63,17 +64,22 @@
     flex-shrink: 0;
     margin: 0;
     background-color: #fbfbfb;
+    border: 1px solid var(--color-background);
 }
 .header {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
 }
+.header-words {
+    font-size: 10px;
+    margin: 0 2%;
+}
 .divider {
-    width: 100%; 
+    width: 90%; 
     border: 1px solid var(--vt-c-black-mute); 
     border-bottom-style: none; 
-    margin: 0 0 2% 0;
+    margin: 0 5% 2% 5%;
 }
 .footer {
     display: flex;
@@ -119,6 +125,10 @@
     right: 2px;
     bottom: 2px;
 }
+.res {
+    font-family: 'DM Mono', monospace; 
+    font-size: 10px;
+}
 .maximize {
     position: absolute;
     right: 2px;
@@ -129,7 +139,7 @@
 }
 p {
     margin: 1% 2%;
-    font-size: 12px;
+    font-size: 10px;
 }
 button {
     width: 20%;
@@ -154,9 +164,21 @@ p {
     opacity: .95;
     box-shadow: 0px 0px 1px 0px var(--color-background); 
     border-radius: 3px;
+    border: none;
 }
 .header {
-  margin-bottom: 2%;
+    margin-bottom: 2%;
+}
+.header-words {
+    font-size: 18px;
+    margin: 0;
+}
+.divider {
+    width: 100%; 
+    margin: 0 0 2% 0; 
+}
+.res {
+    font-size: 16px;
 }
 .swap-left:hover + .instruction {
     width: 90px;

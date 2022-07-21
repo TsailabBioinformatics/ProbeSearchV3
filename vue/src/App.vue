@@ -28,8 +28,9 @@ export default {
       this.count = this.$refs.form.$data.db.length;
       for (var i = 0; i < this.count; i++) {
         const payload = {
-          read: this.$refs.form.$data.read,
-            db: this.$refs.form.$data.db[`${i}`]
+                read: this.$refs.form.$data.read,
+                  db: this.$refs.form.$data.db[`${i}`],
+          mismatches: this.$refs.form.$data.mismatches
         };
         const res = await axios.put('/', payload);
         /* make header */

@@ -36,6 +36,9 @@ export default {
         this.headers[i] = ("input read:\t\t" + this.$refs.form.$data.read + "\n" + 
                            "read length:\t" + this.$refs.form.$data.read.length + "\n" + 
                            "database:\t\t" + this.$refs.form.$data.db[`${i}`] + "\n");
+        if (this.$refs.form.$data.db[`${i}`] === "717V5") { // make note about source of 717V5
+          this.headers[i] += "\nP. tremula x alba 717 V5:\nhaplotype-resolved draft genome sequences from JGI, annotation in progress\n";
+        }
         /* populate alignment results */
         this.results[i] = res.data; 
       } // for

@@ -14,7 +14,7 @@ export default {
   },
   data() {
     return {
-      count: 0,      // number of alignment results 
+      count: 1,      // number of alignment results 
       results: [],   // result data
       headers: [],   // result headers
       show: 0,       // result to show
@@ -24,21 +24,18 @@ export default {
   },
   methods: {
     async run() { 
-      this.count = this.$refs.form.$data.db.length;
-      for (var i = 0; i < this.count; i++) {
-        const payload = {
-                read: this.$refs.form.$data.read,
-                  db: this.$refs.form.$data.db[`${i}`],
-          mismatches: this.$refs.form.$data.mismatches
-        };
-        const res = await axios.put('/', payload);
-        /* make header */
-        this.headers[i] = ("input read:\t\t" + this.$refs.form.$data.read + "\n" + 
-                           "read length:\t" + this.$refs.form.$data.read.length + "\n" + 
-                           "database:\t\t" + this.$refs.form.$data.db[`${i}`] + "\n");
-        /* populate alignment results */
-        this.results[i] = res.data; 
-      } // for
+      const payload = {
+              read: this.$refs.form.$data.read,
+                db: "sPta717V2.0",
+        mismatches: this.$refs.form.$data.mismatches
+      };
+      const res = await axios.put('/', payload);
+      /* make header */
+      this.headers[0] = ("input read:\t\t" + this.$refs.form.$data.read + "\n" + 
+                          "read length:\t" + this.$refs.form.$data.read.length + "\n" + 
+                          "database:\t\tsPta717V2.0\n");
+      /* populate alignment results */
+      this.results[0] = res.data; 
       this.show = 1; // show the first result
       this.$refs.form.$data.loading = false; // stop loading
     },
@@ -79,7 +76,7 @@ export default {
     <!-- background components, toggled by AlignmentResult -->
     <FocusedResult v-if="this.fullscreen == true" :header="headers[this.show - 1]" :data="results[this.show - 1]"
                    v-on:back="minimize_screen()" /> 
-    <Deck v-if="this.deck == true" :count="this.count" :dbnames="this.$refs.form.$data.db" :headers="headers" :results="results" 
+    <Deck v-if="this.deck == true" :count="this.count" :headers="headers" :results="results" 
           v-on:back="minimize_screen()" />
   </div>
 </template>

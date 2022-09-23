@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const { exec } = require('child_process');
 const { execSync } = require('child_process');
-
 const public = __dirname + '/vue/dist/';
 const app = express();
 
@@ -13,9 +12,10 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(public + "index.html"));
 });
 
-app.listen({ port: 8080 }, async () => {
-    console.log('server up @ http://localhost:8080/ !')
+app.listen({ port: 8090 }, async () => {
+    console.log('server up @ http://localhost:8090/ !')
 });
+
 
 /* equates user-selected db name to its path in the directory */
 var db_dictionary = {
@@ -173,8 +173,7 @@ function illustrate(cigar, read, reference, db, chrom, pos) {
             mismatches++;
         } // if
     } // for
-    illustration += "\n\t\tT   " + reference.substring(0, min) + "\n\t" + "total mismatches: " + mismatches + "\n\n";
-    return illustration;
+    return illustration += "\n\t\tT   " + reference.substring(0, min) + "\n\t" + "total mismatches: " + mismatches + "\n\n";
 
 } // illustrate
 

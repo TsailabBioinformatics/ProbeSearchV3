@@ -4,7 +4,6 @@
     data() {
       return {
             read: '',
-              db: ["sPta717V2.0"],
       mismatches: 5,
            error: '',
          loading: false
@@ -20,8 +19,6 @@
           this.error = "only DNA sequences valid";
         } else if (this.read.length < 17) {
           this.error = "input a DNA sequence of length 17 or higher";
-        } else if (this.db.length === 0) {
-          this.error = "select a database";
         } else {
           this.error = '';
           this.loading = true;
@@ -39,7 +36,7 @@
   
   <div class="parent">
 
-    <div style="display: flex; justify-content: center; margin: 0;"><a href="http://aspendb.uga.edu/"><img src="../assets/aspendb_bw2.png" style="opacity: 0.9" width="100" height="60  "/></a></div>
+    <div style="display: flex; justify-content: center; margin: 0;"><a href="http://aspendb.uga.edu/" target="_blank"><img src="../assets/aspendb_bw2.png" style="opacity: 0.9" width="100" height="60  "/></a></div>
     <div class="divider"></div> 
     <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">input primer/probe/gRNA sequence and query the <b style="font-weight: bolder">sPta717V2.0</b> genome</p>
     <textarea rows="2" placeholder="GGGTTCTGCCAATTTAAGCCACATGGCTCAATGGGAGA" v-model="read"></textarea> 
@@ -49,7 +46,7 @@
 
 
       <div>
-        <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">set mismatch number</p>
+        <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">set mismatch number (per subgenome)</p>
         <input v-model="mismatches" type="number" class="mismatch">
         <label>max</label>
       </div>

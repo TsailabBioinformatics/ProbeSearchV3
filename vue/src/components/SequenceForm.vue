@@ -39,7 +39,7 @@
   
   <div class="parent">
 
-    <div style="display: flex; justify-content: center; margin: 0;"><a href="http://aspendb.uga.edu/"><img src="../assets/aspendb_bw2.png" style="opacity: 0.9" width="100" height="60  "/></a></div>
+    <div style="display: flex; justify-content: center; margin: 0;"><a href="http://aspendb.uga.edu/" target="_blank"><img src="../assets/aspendb_bw2.png" style="opacity: 0.9" width="100" height="60  "/></a></div>
     <div class="divider"></div> 
     <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">input primer/probe/gRNA sequence</p>
     <textarea rows="2" placeholder="GGGTTCTGCCAATTTAAGCCACATGGCTCAATGGGAGA" v-model="read"></textarea> 
@@ -54,19 +54,19 @@
 
           <div>
             <input v-model="db" type="checkbox" value="PtrichocarpaV3.1">
-            <label>PtrichocarpaV3.1</label>
+            <label>P. trichocarpa V3.1</label>
           </div>
           <div>
             <input v-model="db" type="checkbox" value="PtrichocarpaV4.0">
-            <label>PtrichocarpaV4.0</label>
+            <label>P. trichocarpa V4.0</label>
           </div>
           <div>
             <input v-model="db" type="checkbox" value="DeltoidesWV94">
-            <label>DeltoidesWV94</label>
+            <label>P. deltoides WV94 V2.1</label>
           </div>
           <div>
             <input v-model="db" type="checkbox" name="717V5" value="717V5">
-            <label for="717V5">717V5</label>
+            <label for="717V5">P. tremula x alba 717 V5</label>
           </div>
 
       </div>

@@ -4,7 +4,7 @@ const { exec } = require('child_process');
 const { execSync } = require('child_process');
 const sqlite = require('better-sqlite3');
 
-const public = __dirname + '/vue/717v2/dist/';
+const public = __dirname + '/vue/717V2/dist/';
 const app = express();
 
 app.use(express.json());
@@ -14,8 +14,8 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(public + "index.html"));
 });
 
-app.listen({ port: 8888 }, async () => {
-    console.log('server up @ http://localhost:3000/ !')
+app.listen({ port: 8091 }, async () => {
+    console.log('server up @ http://localhost:8091/ !')
 });
 
 let db = new sqlite('data/sPta717V2.0/coverage.db');
@@ -32,36 +32,34 @@ app.put('/',  async (req, res) => {
      * call bowtie2 or batmap
      */
     if (req.body.read.length > 50) {
-        exec('./bowtie/bowtie2 -x indices/sPta717V2.0/sPta717V2.0 -k 30 -c ' + String(req.body.read) + '  --very-sensitive --no-hd' , 
-            (error, stdout, stderr) => {
-                if (error) {
-                    console.error(`exec error: ${error}`);
-                }
-                // parse sam file
-                console.log(stdout);
-                stdout = parse(String(req.body.read), "sPta717V2.0", stdout);
-                res.send(stdout);
-        }); 
+        
+        alba = String(execSync('./bowtie/bowtie2 -x indices/sPta717V2.0/sPta717V2.0alba -k 30 -c ' + String(req.body.read) + '  --very-sensitive --no-hd'))
+        tremula = String(execSync('./bowtie/bowtie2 -x indices/sPta717V2.0/sPta717V2.0tremula -k 30 -c ' + String(req.body.read) + '  --very-sensitive --no-hd'))
+        console.log(alba)
+        console.log(tremula)
+        // pass parse function with both sam files 
+        combined = parse(String(req.body.read), alba, tremula)
+        res.send(combined)
+        
     } else {
-        let ts = Date.now();
-        // make fasta input
-        execSync('echo ">seq\n' + String(req.body.read) + '" > ' + ts + "input.fa"); 
-        exec('./batmis/scripts/batmap -q ./' + ts + 'input.fa -g indices/sPta717V2.0/sPta717V2.0 -n' + String(req.body.mismatches) + ' -m50 -o ' + ts + 'output.txt', 
-            (error, stdout, stderr) => {
-                if (error) {
-                    console.error(`exec error: ${error}`);
-                    execSync('rm *bin');
-                }
-                // remove header from sam file
-                exec('grep -v ^@ ' + ts + 'output.txt', (error, stdout, stderror) => {
-                    console.log(stdout);
-                    // remove input and output files 
-                    execSync('rm ' + ts + 'input.fa ' + ts + 'output.txt');
-                    // parse sam file
-                    stdout = parse(String(req.body.read), "sPta717V2.0", stdout);
-                    res.send(stdout);
-                });                   
-        }); 
+
+         let ts = Date.now();
+         // make fasta input
+         execSync('echo ">seq\n' + String(req.body.read) + '" > ' + ts + "input.fa"); 
+         
+         execSync('./batmis/scripts/batmap -q ./' + ts + 'input.fa -g indices/sPta717V2.0/sPta717V2.0alba -n' + String(req.body.mismatches) + ' -m50 -o ' + ts + 'output_alba.txt')
+         execSync('./batmis/scripts/batmap -q ./' + ts + 'input.fa -g indices/sPta717V2.0/sPta717V2.0tremula -n' + String(req.body.mismatches) + ' -m50 -o ' + ts + 'output_tremula.txt')
+         
+         alba = String(execSync('grep -v ^@ ' + ts + 'output_alba.txt'));
+         tremula = String(execSync('grep -v ^@ ' + ts + 'output_tremula.txt'));
+         console.log(alba)
+          
+         execSync('rm ' + ts + 'input.fa ' + ts + 'output_alba.txt ' + ts + 'output_tremula.txt');
+         // rm bin on error
+
+         combined = parse(String(req.body.read), alba, tremula)
+         res.send(combined)
+         
     }
 })
 
@@ -71,43 +69,50 @@ app.put('/',  async (req, res) => {
  * @param db database
  * @param sam SAM file  
  */
-function parse(sequence, db, sam) {
+function parse(sequence, sam_alba, sam_tremula) {
     res = "" 
-    sam = sam.split("\n");
-    for (var i = 0; i < sam.length - 1; i++) {
-        target = sam[i].split("\t");
+    sam_alba = sam_alba.split("\n");
+    sam_tremula = sam_tremula.split("\n");
+
+    for (var i = 0; i < sam_alba.length - 1; i++) {
+        target_alba = sam_alba[i].split("\t");
+        target_tremula = sam_tremula[i].split("\t");
+
         var strand = "+";
         var complement = false;
-        if (target[2] != "*") { // valid target
-            if (target[1] === "16" || target[1] === "272") { // reverse complement
+        if (target_alba[2] != "*" && target_tremula[2] != "*") { // valid target
+            if (target_alba[1] === "16" || target_alba[1] === "272") { // reverse complement
                 strand = "-";
                 complement = true;
             }
-            res += "\t" + target[2] + " : " + target[3] + " (" + strand + ")\n"; 
-            /* parse SAM file - get CIGAR, read, and reference sequence */
-            var gene = get_gene(target[2], parseInt(target[3]), (parseInt(target[3]) + parseInt(sequence.length - 1)), db);
+            res += "\t" + target_alba[2] + " : " + target_alba[3] + " (" + strand + ")\n"; 
+            /* get gene model name */
+            var gene = get_gene(target_alba[2], parseInt(target_alba[3]), (parseInt(target_alba[3]) + parseInt(sequence.length - 1)), "sPta717V2.0");
             res += "\tgene: " + gene + "\n";
-            cigar = target[5];
-            read = target[9];
-            reference = String(execSync('samtools faidx data/sPta717V2.0/sPta717_v2.0.fa ' + target[2] + ":" + target[3] 
-                                        + "-" + (parseInt(target[3]) + sequence.length - 1) + ' | sed 1d')).toUpperCase();
+            /* get CIGAR, read, and reference sequence */
+            cigar_alba = target_alba[5];
+            cigar_tremula = target_tremula[5];
+            read_alba = target_alba[9];
+            read_tremula = target_tremula[9];
+            reference = String(execSync('samtools faidx data/sPta717V2.0/sPta717alba.fasta ' + target_alba[2] + ":" + target_alba[3] 
+                                        + "-" + (parseInt(target_alba[3]) + sequence.length - 1) + ' | sed 1d')).toUpperCase();
             reference = reference.replace("\n", "");
             if (strand === "-") {
-                read = read.split("").reverse().join("").replace("\n", ""); 
+                read_alba = read_alba.split("").reverse().join("").replace("\n", ""); 
+                read_tremula = read_tremula.split("").reverse().join("").replace("\n", ""); 
                 reference = reference.split("").reverse().join("").replace("\n", "");
             }
             if (complement === true) {
-                read = comp(read);
+                read_alba = comp(read_alba);
+                read_tremula = comp(read_tremula);
                 reference = comp(reference);
             }
-            res += illustrate(cigar, read, reference, db, target[2], target[3]); 
+            res += illustrate(cigar_alba, cigar_tremula, read_alba, read_tremula, reference, target_alba[2], target_alba[3]); 
         } else {
-            res += "no targets found\n\n";
-            break;
+            return "no targets found\n\n";
         } // if
     } // for
-    res = sort_illustration(res, 1);
-    return res;
+    return sort_illustration(res);
 } // parse 
 
 
@@ -118,23 +123,23 @@ function parse(sequence, db, sam) {
  * @param reference sequence of reference 
  * @returns illustration of alignment
  */
-function illustrate(cigar, read, reference, db, chrom, pos) {
+function illustrate(cigar_alba, cigar_tremula, read_alba, read_tremula, reference, chrom, pos) {
     var ptr = 0, mismatches = 0; 
     /* parse cigar  */
-    for (var i = 0; i < cigar.length; i++) { 
-        var j = cigar.length - 1;
+    for (var i = 0; i < cigar_alba.length; i++) { 
+        var j = cigar_alba.length - 1;
         // check letters and grab index of closest letter
-        if (cigar.substring(i, cigar.length).indexOf('M') != -1) { 
-            j = cigar.substring(i, cigar.length).indexOf('M') + i;
+        if (cigar_alba.substring(i, cigar_alba.length).indexOf('M') != -1) { 
+            j = cigar_alba.substring(i, cigar_alba.length).indexOf('M') + i;
         }
-        if (cigar.substring(i, cigar.length).indexOf('I') != -1 && (cigar.substring(i, cigar.length).indexOf('I') + i) < j) { 
-            j = cigar.substring(i, cigar.length).indexOf('I') + i;
+        if (cigar_alba.substring(i, cigar_alba.length).indexOf('I') != -1 && (cigar_alba.substring(i, cigar_alba.length).indexOf('I') + i) < j) { 
+            j = cigar_alba.substring(i, cigar_alba.length).indexOf('I') + i;
         }
-        if (cigar.substring(i, cigar.length).indexOf('D') != -1 && (cigar.substring(i, cigar.length).indexOf('D') + i) < j) { 
-            j = cigar.substring(i, cigar.length).indexOf('D') + i;
+        if (cigar_alba.substring(i, cigar_alba.length).indexOf('D') != -1 && (cigar_alba.substring(i, cigar_alba.length).indexOf('D') + i) < j) { 
+            j = cigar_alba.substring(i, cigar_alba.length).indexOf('D') + i;
         }
-
-        var letter = cigar.charAt(j), nucleotides = parseInt(cigar.substring(i, j));
+        
+        var letter = cigar_alba.charAt(j), nucleotides = parseInt(cigar_alba.substring(i, j));
         if (letter === 'M') {
             ptr += nucleotides;
         } else if (letter === "I") {
@@ -143,22 +148,50 @@ function illustrate(cigar, read, reference, db, chrom, pos) {
             ptr += nucleotides;
         } else if (letter === "D") {
             var space = "-".repeat(nucleotides);
-            read = read.substring(0, ptr) + space + read.substring(ptr, read.length);
+            read_alba = read_alba.substring(0, ptr) + space + read_alba.substring(ptr, read_alba.length);
             ptr += nucleotides;
         }
-        if (j != cigar.length - 1) { i = j; } 
+        if (j != cigar_alba.length - 1) { i = j; } 
     } // for
-    
-    /* build illustration  */
-    var illustration = "\t\tQ   " + read.substring(0, read.length) + "\n \t\t    "; 
-    for (var i = 0; i < read.length; i++) {
-        if (read.substring(i, i + 1) == reference.substring(i, i + 1)) { illustration += "|"; } 
+
+    /* we redo this parsing process for tremula sam file */
+    for (var k = 0; k < cigar_tremula.length; k++) { 
+        var l = cigar_tremula.length - 1;
+        // check letters and grab index of closest letter
+        if (cigar_tremula.substring(k, cigar_tremula.length).indexOf('M') != -1) { 
+            l = cigar_tremula.substring(k, cigar_tremula.length).indexOf('M') + k;
+        }
+        if (cigar_tremula.substring(k, cigar_tremula.length).indexOf('I') != -1 && (cigar_tremula.substring(k, cigar_tremula.length).indexOf('I') + k) < l) { 
+            l = cigar_tremula.substring(k, cigar_tremula.length).indexOf('I') + k;
+        }
+        if (cigar_tremula.substring(k, cigar_tremula.length).indexOf('D') != -1 && (cigar_tremula.substring(k, cigar_tremula.length).indexOf('D') + k) < l) { 
+            l = cigar_tremula.substring(k, cigar_tremula.length).indexOf('D') + k;
+        }
+        
+        var letter = cigar_tremula.charAt(l), nucleotides = parseInt(cigar_tremula.substring(k, l));
+        if (letter === 'M') {
+            ptr += nucleotides;
+        } else if (letter === "I") {
+            ptr += nucleotides;
+        } else if (letter === "D") {
+            var space = "-".repeat(nucleotides);
+            read_tremula = read_tremula.substring(0, ptr) + space + read_tremula.substring(ptr, read_tremula.length);
+            ptr += nucleotides;
+        }
+        if (l != cigar_tremula.length - 1) { k = l; } 
+    } // for
+
+    /* build and return illustration */
+    var illustration = "\t\tA   " + read_alba.substring(0, read_alba.length)
+                     + "\n\t\tT   " + read_tremula.substring(0, read_tremula.length)
+                     + "\n \t\t    ";
+    for (var i = 0; i < read_alba.length; i++) {
+        if (read_alba.substring(i, i + 1) == reference.substring(i, i + 1) && read_tremula.substring(i, i + 1) == reference.substring(i, i + 1)) { illustration += "|"; } 
         else { illustration += " "; mismatches++; } 
     } // for
-    return illustration += "\n\t\tT   " + reference.substring(0, read.length) 
-                        + get_coverage(chrom, parseInt(pos), parseInt(read.length)) 
+    illustration += "\n\t\tQ   " + reference.substring(0, read_alba.length);
+    return illustration += get_coverage(chrom, parseInt(pos), parseInt(read_tremula.length)) 
                         + "\n\t" + "total mismatches: " + mismatches + "\n\n";
-
 } // illustrate
 
 
@@ -183,7 +216,7 @@ function comp(str) {
  * @param illustration 
  * @returns sorted illustration
  */
-function sort_illustration(illustration, x) {
+function sort_illustration(illustration) {
     var targets = illustration.split("\n\n");
     var sorted = [];
     var min = 0;
@@ -192,7 +225,7 @@ function sort_illustration(illustration, x) {
     for (var i = 0; i < targets.length - 1; i++) {
         var target_info = targets[i].split("\n");
         var chromosome = target_info[0].split(" ")[0].replace(/\D/g, ""); // grabs chromosome coordinate 
-        var mismatch = target_info[(x + 5)].substr(-2).trim();
+        var mismatch = target_info[7].substr(-2).trim();
         if (mismatch != min) {
             sorted[mismatch] = new Array(0);
             min = mismatch;

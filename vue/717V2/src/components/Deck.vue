@@ -40,7 +40,7 @@
   <div v-if="this.fullscreen == false" class="board">
         
         <div class="spread">
-            <Card v-for="n in count" :title="dbnames[n - 1]" :id=n v-on:fullscreen="maximize(n)"/>
+            <Card v-for="n in count" :title="s717v2" :id=n v-on:fullscreen="maximize(n)"/>
         </div>
     
   </div>

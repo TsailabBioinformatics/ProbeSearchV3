@@ -51,16 +51,16 @@ The following details how data moves in the app. We'll see how the client-side f
 **Deployment** \
 TBD, but as of now, the app is deployed at:  http://aspendb.genetics.uga.edu:8080/
 
-**Editting ProbeSearchV3**
+#### Editting ProbeSearchV3
 - **Frontend**
   - The frontend can be editted from within the `vue/` directory. 
   - The three components as of now are the parent, `App.vue`, and its children, `SequenceForm.vue` & `AlignmentResult.vue`. 
   - After editting the vue files, run `npm run build` from within the `vue/` directory. This command builds the static HTML, css, and js for the frontend and places them in `vue/dist/` directory. The express app, `app.js`, references these static files automatically, so that's all: edit then build. 
 - **API**
-  - The main app, or API functions, can be editted at `app.js`. It is written in Express.
+  - The main app can be editted at `app.js`. It is written in Express.
 - **Backend**
-  - The backend consists of two mains parts: the raw fasta files & the indexed fasta files. In order to edit the backend, or implement more genomes, do the following:
+  - The backend consists of two mains parts: the fasta files & the indexed fasta files. In order to edit the backend, or implement more genomes, do the following:
   1. Transfer whatever fasta files you wish to the parent directory.
   2. Build the indices: `./bowtie/bowtie2-build <path_to_fasta> <index_name>`. Name the index (second parameter) the same name as you display the database on the frontend.
   3. Move the raw fasta file to the `data/` directory, and move the indexed fasta files to the `indices/` directory.
-  4. Finally, go the Express `app.js`, and add to `db_dictionary`, which facilitates a dictionary between the frontend name of the database and the location of the fasta file.
+  4. Go the Express `app.js`, and add to `db_dictionary`, which facilitates a dictionary between the frontend name of the database and the location of the fasta file.

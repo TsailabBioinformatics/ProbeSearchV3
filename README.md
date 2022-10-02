@@ -49,7 +49,7 @@ The following details how data moves in the app. We'll see how the client-side f
   `app.js` sends back data in the form of an illustration to `App.vue`. In turn, `App.vue` passes this data to a child component called `AlignmentResult.vue`. Once the `AlignmentResult` component(s) receive the data, they show on client side. 
 
 **Deployment** \
-TBD, but as of now, the app is deployed at:  http://aspendb.genetics.uga.edu:8080/
+TBD, but as of now, the app is deployed at:  http://aspendb.uga.edu/probesearch/v3/
 
 #### Editting ProbeSearchV3
 - **Frontend**

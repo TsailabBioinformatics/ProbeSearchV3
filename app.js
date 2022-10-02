@@ -93,10 +93,8 @@ function parse(sequence, db, sam) {
                 complement = true;
             }
             res += "\t" + target[2] + " : " + target[3] + " (" + strand + ")\n"; 
-            if (db != "717V5") { // get gene model names 
-                var gene = get_gene(target[2], parseInt(target[3]), (parseInt(target[3]) + parseInt(sequence.length - 1)), db);
-                res += "\tgene: " + gene + "\n";
-            }
+            var gene = get_gene(target[2], parseInt(target[3]), (parseInt(target[3]) + parseInt(sequence.length - 1)), db);
+            res += "\tgene: " + gene + "\n";
             cigar = target[5];
             read = target[9];
             reference = String(execSync('samtools faidx ' +  db_dictionary[db] + ' ' + target[2] + ":" + target[3] 
@@ -114,7 +112,7 @@ function parse(sequence, db, sam) {
             break;
         } // if
     } // for
-    if (db === "717V5") { res = sort_illustration(res, 0); } else { res = sort_illustration(res, 1); }
+    res = sort_illustration(res, 1); 
     return res;
 } // parse 
 
@@ -244,7 +242,10 @@ function get_gene(chrom, start_coord, end_coord, db) {
     execSync('rm ' + ts + 'query.bed');
 
     if (intersect === "") { return "intergenic" }
-    else { return intersect.split("\t")[6].replace("\n", "") }
+    else { 
+        console.log("hit")
+        return intersect.split("\t")[6].replace("\n", "") 
+    }
 } // get_gene
 
 

@@ -66,7 +66,7 @@
           </div>
           <div>
             <input v-model="db" type="checkbox" name="717V5" value="717V5">
-            <label for="717V5">P. tremula x alba 717 V5</label>
+            <label for="717V5">P. tremula x alba 717 V5.1</label>
           </div>
 
       </div>

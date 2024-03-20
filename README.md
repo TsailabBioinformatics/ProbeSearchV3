@@ -15,7 +15,7 @@ Probesaerch is a tool designed to facilitate the alignment of primer/probe/gRNA 
    - Additionally provides Gene Features and CDS Overlapping Info.
 
 ### Server Information
-The app is currently hosted on server 172.30.18.104 with the following configurations:
+The app is currently hosted on server `172.30.18.104` with the following configurations:
 - V3: Running on port 8503, accessible through http://tsailab.gene.uga.edu/probesearch/v3/
 - V3.2: Running on port 8090, accessible through http://tsailab.gene.uga.edu/probesearch/v3.2/
 

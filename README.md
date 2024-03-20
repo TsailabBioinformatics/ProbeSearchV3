@@ -60,7 +60,7 @@ Here is description of full stack of ProbeSearchV3.
   - In order to create an index for bowtie, use `./bowtie/bowtie2-build <path_to_fasta> <index_name>`. Then move these indices to `indices/`
   - In order to create an index for batmis, use `./usr/local/bin/build_index <path_to_fasta> <index_name>`. Then move these indices to `indices/`
   - Indices are integral to bowtie2 alignment. `app.js` makes a call to `./bowtie/bowtie2 -x indices/<db> -k 30 -c <read>`. Here, `<db>` represents the user-selected database, and `<read>` represents the input read.
-  - `GeneTable/`: contains gene database used by V3.2 
+- `GeneTable/`: contains gene database used by V3.2 
 - `vue/`: Frontend Vue files
 
 **Data Flow** \

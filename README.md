@@ -19,6 +19,8 @@ The app is currently hosted on server 172.30.18.104 with the following configura
 - V3: Running on port 8503, accessible through http://tsailab.gene.uga.edu/probesearch/v3/
 - V3.2: Running on port 8090, accessible through http://tsailab.gene.uga.edu/probesearch/v3.2/
 
+### Code Location on Server: `/home/tsai-apps/ProbeSearchV3.2`
+
 ### Requirements
 - Node.js: https://nodejs.dev/learn/how-to-install-nodejs
 
@@ -41,6 +43,11 @@ Then change into the frontend `vue/` directory, and install its packages. \
 `node app.js` 
 
 ---
+
+### Deployment
+pm2 is a node process manager that keeps the node app runnning as a background process. Run pm2 list to checkout the current node processes running on pm2. If for some reason probesearch or probesearchv3.2 is no longer running, we can run pm2 start app.js --name probesearch to restart it. Also, one can run pm2 --help to learn about all of its functions.
+
+Although the app independently runs on the ports, we hackily embed it within the apache2 web service. Check out tsai-apps@172.30.18.104:/var/www/tsailabgene/probesearch/v3/index.html and tsai-apps@172.30.18.104:/var/www/tsailabgene/probesearch/v3.2/index.html to see how this works!
 
 ### Understanding ProbeSearchV3
 Here is description of full stack of ProbeSearchV3. 

@@ -1,24 +1,10 @@
-const express = require('express');
-const path = require('path');
 const { exec } = require('child_process');
 const { execSync } = require('child_process');
 const sqlite = require('better-sqlite3');
 
 const public = __dirname + '/vue/717V2/dist/';
-const app = express();
 
-app.use(express.json());
-app.use(express.static(public))
-
-app.get('/', function (req, res) {
-    res.sendFile(path.join(public + "index.html"));
-});
-
-app.listen({ port: 8091 }, async () => {
-    console.log('server up @ http://localhost:8091/ !')
-});
-
-let db = new sqlite('data/sPta717V2.0/coverage.db');
+let db = new sqlite('/data/probesearchDB/data/sPta717V2.0/coverage.db');
 
 
 /*********************************************************************************************************************/
@@ -27,41 +13,48 @@ let db = new sqlite('data/sPta717V2.0/coverage.db');
 /**
  * listens for put request: calls batmis or bowtie2 child process and sends back alignment visualization
  */
-app.put('/',  async (req, res) => {
-    /**
-     * call bowtie2 or batmap
-     */
-    if (req.body.read.length > 50) {
+ 
+function DB717V2(input,X) {
+	
+	return new Promise((resolve, reject) => {
+		if (input.length > 50) {
         
-        alba = String(execSync('./bowtie/bowtie2 -x indices/sPta717V2.0/sPta717V2.0alba -k 30 -c ' + String(req.body.read) + '  --very-sensitive --no-hd'))
-        tremula = String(execSync('./bowtie/bowtie2 -x indices/sPta717V2.0/sPta717V2.0tremula -k 30 -c ' + String(req.body.read) + '  --very-sensitive --no-hd'))
-        console.log(alba)
-        console.log(tremula)
-        // pass parse function with both sam files 
-        combined = parse(String(req.body.read), alba, tremula)
-        res.send(combined)
+			alba = String(execSync('./bowtie/bowtie2 -x indices/sPta717V2.0/sPta717V2.0alba -k 30 -c ' + String(input) + '  --very-sensitive --no-hd'))
+			tremula = String(execSync('./bowtie/bowtie2 -x indices/sPta717V2.0/sPta717V2.0tremula -k 30 -c ' + String(input) + '  --very-sensitive --no-hd'))
+			console.log(alba)
+			console.log(tremula)
+			// pass parse function with both sam files 
+			combined = parse(String(input), alba, tremula)
+			res.send(combined)
         
-    } else {
+		} else {
 
-         let ts = Date.now();
-         // make fasta input
-         execSync('echo ">seq\n' + String(req.body.read) + '" > ' + ts + "input.fa"); 
-         
-         execSync('./batmis/scripts/batmap -q ./' + ts + 'input.fa -g indices/sPta717V2.0/sPta717V2.0alba -n' + String(req.body.mismatches) + ' -m50 -o ' + ts + 'output_alba.txt')
-         execSync('./batmis/scripts/batmap -q ./' + ts + 'input.fa -g indices/sPta717V2.0/sPta717V2.0tremula -n' + String(req.body.mismatches) + ' -m50 -o ' + ts + 'output_tremula.txt')
-         
-         alba = String(execSync('grep -v ^@ ' + ts + 'output_alba.txt'));
-         tremula = String(execSync('grep -v ^@ ' + ts + 'output_tremula.txt'));
-         console.log(alba)
-          
-         execSync('rm ' + ts + 'input.fa ' + ts + 'output_alba.txt ' + ts + 'output_tremula.txt');
-         // rm bin on error
-
-         combined = parse(String(req.body.read), alba, tremula)
-         res.send(combined)
+			let ts = Date.now();
+			// make fasta input
+			execSync('echo ">seq\n' + String(input) + '" > ' + ts + "input.fa"); 
+			
+			execSync('./batmis/scripts/batmap -q ./' + ts + 'input.fa -g indices/sPta717V2.0/sPta717V2.0alba -n' + String(X) + ' -m50 -o ' + ts + 'output_alba.txt')
+			execSync('./batmis/scripts/batmap -q ./' + ts + 'input.fa -g indices/sPta717V2.0/sPta717V2.0tremula -n' + String(X) + ' -m50 -o ' + ts + 'output_tremula.txt')
+			
+			alba = String(execSync('grep -v ^@ ' + ts + 'output_alba.txt'));
+			tremula = String(execSync('grep -v ^@ ' + ts + 'output_tremula.txt'));
+			console.log(alba)
+			
+			execSync('rm ' + ts + 'input.fa ' + ts + 'output_alba.txt ' + ts + 'output_tremula.txt');
+			// rm bin on error
+	
+			combined = parse(String(input), alba, tremula)
+			//res.send(combined)
+			return resolve(combined);
+			
          
     }
-})
+	
+	
+	
+	});
+}
+ 
 
 /**
  * parses the SAM file input and gathers reference sequence.
@@ -94,7 +87,7 @@ function parse(sequence, sam_alba, sam_tremula) {
             cigar_tremula = target_tremula[5];
             read_alba = target_alba[9];
             read_tremula = target_tremula[9];
-            reference = String(execSync('samtools faidx data/sPta717V2.0/sPta717alba.fasta ' + target_alba[2] + ":" + target_alba[3] 
+            reference = String(execSync('samtools faidx /data/probesearchDB/data/sPta717V2.0/sPta717alba.fasta ' + target_alba[2] + ":" + target_alba[3] 
                                         + "-" + (parseInt(target_alba[3]) + sequence.length - 1) + ' | sed 1d')).toUpperCase();
             reference = reference.replace("\n", "");
             if (strand === "-") {
@@ -257,7 +250,7 @@ function sort_illustration(illustration) {
  function get_gene(chrom, start_coord, end_coord, db) {
     let ts = Date.now();
     execSync('echo "' + String(chrom) + '\t' + String(start_coord) + '\t' + String(end_coord) + '" > ' + ts + "query.bed") // make input file
-    var intersect = String(execSync('bedtools intersect -a ' + ts + 'query.bed -b data/' + db + '/' + db + '.gene.table -wb -nonamecheck | head -n 1'));
+    var intersect = String(execSync('bedtools intersect -a ' + ts + 'query.bed -b /data/probesearchDB/data/' + db + '/' + db + '.gene.table -wb -nonamecheck | head -n 1'));
     execSync('rm ' + ts + 'query.bed'); // delete input file 
 
     if (intersect === "") { return "intergenic" }
@@ -291,3 +284,5 @@ function get_coverage(chrom, pos, length) {
     } else { coverage += "0".repeat(length); }
     return coverage;
 }
+
+module.exports = {DB717V2}; // Export the function

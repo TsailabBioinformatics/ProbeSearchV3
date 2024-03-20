@@ -22,7 +22,9 @@ The app is currently hosted on server 172.30.18.104 with the following configura
 ### Requirements
 - Node.js: https://nodejs.dev/learn/how-to-install-nodejs
 
-
+#### Installation and Execution of Razers3
+- Follow the instructions provided in the [SeqAn GitHub repository](https://github.com/seqan/seqan/tree/main/apps/razers3) to set up Razers3 aligner executable.
+  
 ### Instructions
 1. Clone this repository. \
 `git clone https://github.com/TsailabBioinformatics/ProbeSearchV3`
@@ -44,13 +46,14 @@ Then change into the frontend `vue/` directory, and install its packages. \
 Here is description of full stack of ProbeSearchV3. 
 
 **Directory Structure**
-- `data/`: Fasta files are located in `data/`
+- `data/`: Fasta files are located in `/data/probesearchDB/data/` on the server
 - `bowtie/`: Bowtie2 executables are located in `bowtie/`  
 - `scripts/`: Helper scripts for Bowtie2
 - `indices/`: Bowtie2 uses indexed versions of the fasta files. Indices are located in `indices/`. 
   - In order to create an index for bowtie, use `./bowtie/bowtie2-build <path_to_fasta> <index_name>`. Then move these indices to `indices/`
   - In order to create an index for batmis, use `./usr/local/bin/build_index <path_to_fasta> <index_name>`. Then move these indices to `indices/`
-  - Indices are integral to bowtie2 alignment. `app.js` makes a call to `./bowtie/bowtie2 -x indices/<db> -k 30 -c <read>`. Here, `<db>` represents the user-selected database, and `<read>` represents the input read. 
+  - Indices are integral to bowtie2 alignment. `app.js` makes a call to `./bowtie/bowtie2 -x indices/<db> -k 30 -c <read>`. Here, `<db>` represents the user-selected database, and `<read>` represents the input read.
+  - `GeneTable/`: contains gene database used by V3.2 
 - `vue/`: Frontend Vue files
 
 **Data Flow** \
@@ -65,8 +68,29 @@ The following details how data moves in the app. We'll see how the client-side f
 3. Returning Alignment Result \
   `app.js` sends back data in the form of an illustration to `App.vue`. In turn, `App.vue` passes this data to a child component called `AlignmentResult.vue`. Once the `AlignmentResult` component(s) receive the data, they show on client side. 
 
-**Deployment** \
-TBD, but as of now, the app is deployed at:  http://aspendb.uga.edu/probesearch/v3/
+#### UI
+Both versions share the same user interface to avoid complexity. However, their backend implementations differ.
+
+#### Scripts
+Each version has three separate scripts:
+1. **Bowtie2 Scripts**:
+   - Handles alignment using Bowtie2 for all genome databases except sPta717V2.0.
+   - V3: `app.js`
+   - V3.2: `appV3.js`
+
+2. **Specialized Bowtie2 Script**:
+   - Specifically for the sPta717V2.0 database due to differences in output format.
+   - Script: `717V2.js`
+
+3. **Razers3 Scripts**:
+   - Utilizes Razers3 aligner for alignment.
+   - V3: `razers3.js`
+   - V3.2: `razers3V3.js`
+
+#### Entry Points
+- V3: Entry point is through `app.js`.
+- V3.2: Entry point is through `appV3.js`.
+- 
 
 #### Editting ProbeSearchV3
 - **Frontend**
@@ -74,7 +98,7 @@ TBD, but as of now, the app is deployed at:  http://aspendb.uga.edu/probesearch/
   - The three components as of now are the parent, `App.vue`, and its children, `SequenceForm.vue` & `AlignmentResult.vue`. 
   - After editting the vue files, run `npm run build` from within the `vue/` directory. This command builds the static HTML, css, and js for the frontend and places them in `vue/dist/` directory. The express app, `app.js`, references these static files automatically, so that's all: edit then build. 
 - **API**
-  - The main app can be editted at `app.js`. It is written in Express.
+  - The main app can be editted at `app.js` or `appV3.js` based on the version of the app. It is written in Express.
 - **Backend**
   - The backend consists of two mains parts: the fasta files & the indexed fasta files. In order to edit the backend, or implement more genomes, do the following:
   1. Transfer whatever fasta files you wish to the parent directory.

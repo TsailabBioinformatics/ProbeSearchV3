@@ -35,7 +35,7 @@ Then change into the frontend `vue/` directory, and install its packages. \
 `cd vue/` \
 `npm install`
 
-3. Make the directories `data/` and `indices/` directories to the parent directory. Refer to [Editing Backend section.](#editting-probesearchv3)
+3. Update the directories path of `data/` and `indices/` in the script. Refer to [Editing Backend section.](#editting-probesearchv3)
 
 4. Run the app. \
 `node app.js` 
@@ -105,3 +105,6 @@ Each version has three separate scripts:
   2. Build the indices: `./bowtie/bowtie2-build <path_to_fasta> <index_name>`. Name the index (second parameter) the same name as you display the database on the frontend.
   3. Move the raw fasta file to the `data/` directory, and move the indexed fasta files to the `indices/` directory.
   4. Go the Express `app.js`, and add to `db_dictionary`, which facilitates a dictionary between the frontend name of the database and the location of the fasta file.
+
+#### Note:
+Make sure all the files - app.js, appV3.js, razers3.js, razers3V3.js and 717V2.js have update path according to respective directories. 

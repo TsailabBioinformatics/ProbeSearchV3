@@ -1,7 +1,18 @@
 # ProbeSearchV3
 [//]: <TODO: figure out the best way to structure and tranfer `indices/` and `data/` directories>
 
-This app consists of a form, which allows the user to input a primer/probe/gRNA sequence and select a set of genome databases. Upon form submission, the app returns a result of the input read aligned against the selected genome. The alignment is done via bowtie2 software. The app is written in Nodejs, Expressjs, and Vue.js. 
+#### Overview
+Probesaerch is a tool designed to facilitate the alignment of primer/probe/gRNA sequences against selected genome databases. It currently has two versions: V3 and V3.2. The app is written in Nodejs, Expressjs, and Vue.js. 
+
+#### Versions
+1. **V3**: 
+   - Allows users to input primer/probe/gRNA sequences and select a set of genome databases.
+   - Upon submission, the app returns the result of the input read aligned against the selected genome using the Bowtie2 software.
+   - Provides an option to change the aligner to Razers3, primarily used for aligning with short reads.
+
+2. **V3.2**:
+   - Includes all features of V3.
+   - Additionally provides Gene Features and CDS Overlapping Info.
 
 ### Requirements
 - Node.js: https://nodejs.dev/learn/how-to-install-nodejs

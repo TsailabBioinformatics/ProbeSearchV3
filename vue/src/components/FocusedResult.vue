@@ -9,6 +9,7 @@
     },
     emits: ["back"]
   }
+  
 </script>
 
 
@@ -20,11 +21,12 @@
         <p class="instruction"> minimize </p>
         
         <div style="width: 100%; height: fit-content; display: flex; justify-content: center; align-items: center; white-space: pre;"> 
-            <h3>{{header}}</h3>
+            <p style="font-family: auto; font-size: 20px"><b>{{header}}</b></p>
         </div>
         <div class="divider"></div> 
         <pre>
-            <p style="font-family: 'DM Mono', monospace; font-size: 16px">{{data}}</p>
+            <!--<p style="font-family: 'DM Mono', monospace; font-size: 16px">{{data}}</p>-->
+            <p style="font-family: auto, monospace; font-size: 16px">{{data}}</p>
         </pre>
     
   </div>

@@ -6,6 +6,9 @@
             read: '',
               db: [],
       mismatches: 5,
+	  gapFlag: 'true',
+	  maxHit: 50,
+	  aligner: "bowtie2",
            error: '',
          loading: false
       }
@@ -17,20 +20,32 @@
       submit() { 
         const regex = /[^ATGC]/i;
         if (this.read.search(regex) !== -1) {
-          this.error = "only DNA sequences valid";
+          this.error = "Only DNA sequences valid";
         } else if (this.read.length < 17) {
-          this.error = "input a DNA sequence of length 17 or higher";
+          this.error = "Input a DNA sequence of length 17 or higher";
         } else if (this.db.length === 0) {
-          this.error = "select a database";
+          this.error = "Select a database";
         } else {
           this.error = '';
           this.loading = true;
           this.read = this.read.toUpperCase();
           this.$emit("valid");
+		  
         }
       }
     },
-    emits: ["valid"]
+    emits: ["valid"],
+	computed: {
+    shouldShowComponent1() {
+      // Check if the port is equal to 8503
+      return window.location.port !== '8503';
+    },
+	shouldShowComponent2() {
+      // Check if the port is equal to 8090
+      return window.location.port !== '8090';
+    }
+  }
+  
   }
 </script>
 
@@ -40,53 +55,100 @@
   <div class="parent">
 
     <div style="display: flex; justify-content: center; margin: 0;"><a href="http://aspendb.uga.edu/" target="_blank"><img src="../assets/aspendb_bw2.png" style="opacity: 0.9" width="100" height="60  "/></a></div>
+	<div><p style="font-size: 10px; text-align: right; color:red;"><u style="font-size: 12px; color:blue;"><a v-if="shouldShowComponent2" href="https://aspendb.uga.edu/probesearch/v3.2/" target="_blank">V3.2</a></u><b> *New: Improve Search Speed with Gene Features, CDS Overlapping Info, and Razers3 Aligner Integration (Gap/No Gap). </b></p></div>
     <div class="divider"></div> 
-    <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">input primer/probe/gRNA sequence</p>
-    <textarea rows="2" placeholder="GGGTTCTGCCAATTTAAGCCACATGGCTCAATGGGAGA" v-model="read"></textarea> 
-    <div style="display: flex; align-items: center;">
-    <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">select one or more genomes</p>
-    </div>
+	<div style="box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 1px 5px 10px; padding: 2px;">
+		<p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2"><b>Input primer/probe/gRNA sequence</b></p>
+		<textarea rows="2" placeholder="GGGTTCTGCCAATTTAAGCCACATGGCTCAATGGGAGA" v-model="read"></textarea> 
+	</div>
+	
+	
+	<div style="box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 1px 5px 10px; padding: 10px;">
+		<div style="display: block; align-items: center;">
+			<p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2"><b>Select one or more genomes</b></p>
+			<!-- Checkboxes -->
+			<div class="checkboxes" style="display: flex; ">
+				<div>
+					<input v-model="db" type="checkbox" value="PtrichocarpaV3.1">
+					<label>P. trichocarpa V3.1</label>
+				</div>
+				<div>
+					<input v-model="db" type="checkbox" value="PtrichocarpaV4.0">
+					<label>P. trichocarpa V4.0</label>
+				</div>
+				<div>
+					<input v-model="db" type="checkbox" value="DeltoidesWV94">
+					<label>P. deltoides WV94 V2.1</label>
+				</div>
+				<div>
+					<input v-model="db" type="checkbox" name="717V5" value="717V5">
+					<label for="717V5">P. tremula x alba 717 V5.1</label>
+				</div>
+				<div>
+					<input v-model="db" type="checkbox" name="sPta717V2" value="sPta717V2">
+					<label for="sPta717V2">sPta717V2.0 (Legacy)</label>
+				</div>
+		  
+			</div>
+			
+		</div>
+		
+		<div style="display:table-row;">
+			<div style="display: table-cell">
+				<p style="width: 185px; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2"><b>Set mismatch number</b></p>
+				<input v-model="mismatches" type="number" class="mismatch">
+				<label>max</label>
+			</div>
+			
+			
+		
+			
+			<!--<div v-if="db[0] !== 'sPta717V2'" style="display: table-cell">-->
+			<div v-if="shouldShowComponent1 && db[0] !== 'sPta717V2'" style="display: table-cell">
+				<p style="width: 185px; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2"><b>Search with gaps/no-gaps?</b></p>
+				<input type="radio" id="razers3" value="razers3" v-model="aligner" />
+				<label for="razers3">Yes</label>
+				<input type="radio" id="bowtie2" value="bowtie2" v-model="aligner" />
+				<label for="bowtie2">No</label>
+			</div>
+			
+			
+			<div v-if="aligner === 'razers3'">
+				<div style="display: table-cell; padding: 10px;">
+					<p style="width: 185px; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2"><b>Set hit number </b></p>
+					<input v-model="maxHit" type="number" class="mismatch">
+					<label>max</label>
+				</div>
+			
+			
+				<div style="display: table-cell">
+					<p style="width: 185px; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2"><b>Select Gap Flag</b></p>
+					<input v-model="gapFlag" type="radio" name="Gap-True" value="true" checked="checked">
+					<label for="Gap-True">True</label>
+					<input v-model="gapFlag" type="radio" name="Gap-False" value="false">
+					<label for="Gap-False">False</label>
+				</div>
+				
+			</div>
+			
+			
+		</div>
+		
+	
+	</div>
+	
 
-    <div style="display: flex; flex-direction: column;">
-      
-            
-        <div class="checkboxes">
-
-          <div>
-            <input v-model="db" type="checkbox" value="PtrichocarpaV3.1">
-            <label>P. trichocarpa V3.1</label>
-          </div>
-          <div>
-            <input v-model="db" type="checkbox" value="PtrichocarpaV4.0">
-            <label>P. trichocarpa V4.0</label>
-          </div>
-          <div>
-            <input v-model="db" type="checkbox" value="DeltoidesWV94">
-            <label>P. deltoides WV94 V2.1</label>
-          </div>
-          <div>
-            <input v-model="db" type="checkbox" name="717V5" value="717V5">
-            <label for="717V5">P. tremula x alba 717 V5.1</label>
-          </div>
-
-      </div>
-
-      <div>
-        <p style="width: fit-content; padding: 0 1%; border-radius: 3px; background-color: #f2f2f2">set mismatch number</p>
-        <input v-model="mismatches" type="number" class="mismatch">
-        <label>max</label>
-      </div>
-
-     
-
-      <button v-on:click="submit()">
-        <p>search</p>
-      </button>
-
+    <div style="display: flex; flex-direction: row-reverse; padding: 5px;">
+		<div style="margin-left: 52px;">
+			<button v-on:click="submit()" style="width:150px;">
+				<p><b>Search</b></p>
+			</button>
+		</div>
+	
       <!-- display on error -->
       <div class="error" v-if="error != ''">
         <div style="width: fit-content; background-color: #f5f5f7; border-radius: 2px; padding: 0 1%">
-          <p> {{ error }} </p>
+          <p style="width:585px; text-align: center; color:red;"> {{ error }} </p>
         </div>
       </div>
 
@@ -105,6 +167,7 @@
 p {
     margin: 1% 2% 1% 2%;
     font-size: 10px;
+	font-family: auto;
 }
 label {
     font-size: 10px;
@@ -231,7 +294,7 @@ button:hover {
 .parent {
     width: 70vw; 
     margin: 5% auto 2% auto;
-    padding: 1rem 8rem 2rem 8rem;
+    padding: 1rem 3rem 2rem 3rem;
     opacity: .95;
     border-radius: 3px;
     box-shadow: 0px 0px 1px 0px var(--color-background); 

@@ -14,7 +14,9 @@
       download() { /* TODO */ }
     },
     emits: ["swap-left", "swap-right", "fullscreen", "deck"]
+
   }
+//console.log(default)  
 </script>
 
 
@@ -37,13 +39,14 @@
         </div>
     </div>
 
-    <div style="width: 100%; height: fit-content; display: flex; justify-content: center; align-items: flex-start; flex-direction: column; white-space: pre;"> 
-        <h3 style="margin-bottom: 2%;">{{header}}</h3>
-        <h3 style="margin-bottom: 2%;">only the top 50 hits are shown</h3>
+    <div style="width: 100%; height: fit-content; display: flex; justify-content: center; align-items: flex-start; flex-direction: column; white-space: pre; overflow: auto;"> 
+		<p style="font-family: auto; font-size: 20px"><b>{{header}}</b></p>
     </div>
+	
     <div class="divider"></div> 
     <pre>
-        <p class="res">{{data}}</p>
+        <!--<p class="res">{{data}}</p>-->
+        <p class="res"><span v-html="data"></span></p>
     </pre>
 
     <div class="footer">

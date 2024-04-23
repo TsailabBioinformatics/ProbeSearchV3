@@ -170,8 +170,8 @@ function parse(sequence, db, razers) {
 						}else{
 							feature = "Intron";
 						}
-						//gene = geneID + " Feature: "+ feature;
-						gene = geneID;
+						gene = geneID + " Feature: "+ feature;
+						//gene = geneID;
 					}
 					
 					//---------------------------------------------------------
@@ -232,16 +232,16 @@ function illustrate(read, reference, cdsFlag,cdsStart, cdsEnd) {
 	
 	
 	inputString = reference.substring(0, min);
-	//if(cdsFlag){
-	//	// Extract the substrings before, within, and after the specified range
-	//	
-	//	const beforeRange = inputString.slice(0, cdsStart-1);
-	//	const withinRange = inputString.slice(cdsStart-1, cdsEnd);
-	//	const afterRange = inputString.slice(cdsEnd);
-	//	const wrappedString = `${beforeRange}<span style="background-color: chartreuse;">${withinRange}</span>${afterRange}`;
-	//	//const wrappedString = `${beforeRange}<strong style="background-color: chartreuse;">${withinRange}</strong>${afterRange}`;
-	//	inputString = wrappedString;
-	//}
+	if(cdsFlag){
+		// Extract the substrings before, within, and after the specified range
+		
+		const beforeRange = inputString.slice(0, cdsStart-1);
+		const withinRange = inputString.slice(cdsStart-1, cdsEnd);
+		const afterRange = inputString.slice(cdsEnd);
+		const wrappedString = `${beforeRange}<span style="background-color: chartreuse;">${withinRange}</span>${afterRange}`;
+		//const wrappedString = `${beforeRange}<strong style="background-color: chartreuse;">${withinRange}</strong>${afterRange}`;
+		inputString = wrappedString;
+	}
 	
 	
     //return illustration += "\n\t\tT   " + reference.substring(0, min) + "\n\t" + "total mismatches: " + mismatches + "\n\n";

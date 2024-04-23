@@ -29,12 +29,15 @@ export default {
         const payload = {
                 read: this.$refs.form.$data.read,
                   db: this.$refs.form.$data.db[`${i}`],
-          mismatches: this.$refs.form.$data.mismatches
+          mismatches: this.$refs.form.$data.mismatches,
+          gapFlag: this.$refs.form.$data.gapFlag,
+          maxHit: this.$refs.form.$data.maxHit,
+          aligner: this.$refs.form.$data.aligner
         };
         const res = await axios.put('/', payload);
         /* make header */
         this.headers[i] = ("input read:\t\t" + this.$refs.form.$data.read + "\n" + 
-                           "read length:\t" + this.$refs.form.$data.read.length + "\n" + 
+                           "read length:\t\t" + this.$refs.form.$data.read.length + "\n" + 
                            "database:\t\t" + this.$refs.form.$data.db[`${i}`] + "\n");
         if (this.$refs.form.$data.db[`${i}`] === "717V5") { // make note about source of 717V5
           this.headers[i] += "\n717v5.1 (haplotype resolved genome sequences from JGI)\nT = P. tremula subgenome (PtXaTreH)\nA = P. alba subgenome (PtXaAlbH)\n";

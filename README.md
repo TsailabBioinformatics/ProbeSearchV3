@@ -1,48 +1,32 @@
 # ProbeSearchV3
 [//]: <TODO: figure out the best way to structure and tranfer `indices/` and `data/` directories>
 
-#### Overview
-Probesaerch is a tool designed to facilitate the alignment of primer/probe/gRNA sequences against selected genome databases. It currently has two versions: V3 and V3.2. The app is written in Nodejs, Expressjs, and Vue.js. 
+## Overview
+Probesaerch align primer/probe/gRNA sequences against selected genome databases. It currently has two versions: V3 and V3.2. The app is written in Nodejs, Expressjs, and Vue.js. 
 
-#### Versions
-1. **V3**: 
-   - Allows users to input primer/probe/gRNA sequences and select a set of genome databases.
-   - Upon submission, the app returns the result of the input read aligned against the selected genome using the Bowtie2 software.
-   - Provides an option to change the aligner to Razers3, primarily used for aligning with short reads.
-
-2. **V3.2**:
-   - Includes all features of V3.
-   - Additionally provides Gene Features and CDS Overlapping Info.
-
-### Code Location on Server: `/home/tsai-apps/ProbeSearchV3.2`
-
-### Requirements
-- Node.js: https://nodejs.dev/learn/how-to-install-nodejs
-
-#### Installation and Execution of Razers3
-- Follow the instructions provided in the [SeqAn GitHub repository](https://github.com/seqan/seqan/tree/main/apps/razers3) to set up Razers3 aligner executable.
   
-### Instructions
-1. Clone this repository. \
-`git clone https://github.com/TsailabBioinformatics/ProbeSearchV3`
+## Installation
 
-2. Travel to the parent project directory and install the required node packages. \
-`npm install` \
-Then change into the frontend `vue/` directory, and install its packages. \
-`cd vue/` \
-`npm install`
+1. Install Node.js: https://nodejs.dev/learn/how-to-install-nodejs
+2. Install Razers3: Follow the instructions provided in the [SeqAn GitHub repository](https://github.com/seqan/seqan/tree/main/apps/razers3) to set up Razers3 aligner executable.
+3. setup the app
 
-3. Update the directories path of `data/` and `indices/` in the script. Refer to [Editing Backend section.](#editting-probesearchv3)
+```bash
+git clone https://github.com/TsailabBioinformatics/ProbeSearchV3
+cd ProbeSearchV3
+npm install
 
-4. Run the app. \
-`node app.js` 
+cd vue
+npm install
 
----
+# Update the directories path of `data/` and `indices/` in the script. Refer to [Editing Backend section.](#editting-probesearchv3)
+node app.js
+```
 
-### Deployment
+## Deployment
 pm2 is a node process manager that keeps the node app runnning as a background process. Run `pm2 list` to checkout the current node processes running on pm2. If for some reason probesearch or probesearchv3.2 is no longer running, we can run `pm2 start app.js --name probesearch` to restart it. Also, one can run `pm2 --help` to learn about all of its functions.
 
-### Understanding ProbeSearchV3
+## Understanding ProbeSearchV3
 Here is description of full stack of ProbeSearchV3. 
 
 **Directory Structure**
@@ -105,6 +89,17 @@ Each version has three separate scripts:
   2. Build the indices: `./bowtie/bowtie2-build <path_to_fasta> <index_name>`. Name the index (second parameter) the same name as you display the database on the frontend.
   3. Move the raw fasta file to the `data/` directory, and move the indexed fasta files to the `indices/` directory.
   4. Go the Express `app.js`, and add to `db_dictionary`, which facilitates a dictionary between the frontend name of the database and the location of the fasta file.
+
+#### Versions
+1. **V3**: 
+   - Allows users to input primer/probe/gRNA sequences and select a set of genome databases.
+   - Upon submission, the app returns the result of the input read aligned against the selected genome using the Bowtie2 software.
+   - Provides an option to change the aligner to Razers3, primarily used for aligning with short reads.
+
+2. **V3.2**:
+   - Includes all features of V3.
+   - Additionally provides Gene Features and CDS Overlapping Info.
+
 
 #### Note:
 Make sure all the files - app.js, appV3.js, razers3.js, razers3V3.js and 717V2.js have update path according to respective directories. 

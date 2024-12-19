@@ -103,3 +103,5 @@ Each version has three separate scripts:
 
 #### Note:
 Make sure all the files - app.js, appV3.js, razers3.js, razers3V3.js and 717V2.js have update path according to respective directories. 
+#### Ran's Note:
+The names for both folders of index and fasta file should match (be the same). Otherwise, it won't work for any newly added genomes.

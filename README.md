@@ -90,17 +90,9 @@ Each version has three separate scripts:
   3. Move the raw fasta file to the `data/` directory, and move the indexed fasta files to the `indices/` directory.
   4. Go the Express `app.js`, and add to `db_dictionary`, which facilitates a dictionary between the frontend name of the database and the location of the fasta file.
 
-#### Versions
-1. **V3**: 
-   - Allows users to input primer/probe/gRNA sequences and select a set of genome databases.
-   - Upon submission, the app returns the result of the input read aligned against the selected genome using the Bowtie2 software.
-   - Provides an option to change the aligner to Razers3, primarily used for aligning with short reads.
+## Versions
 
-2. **V3.2**:
-   - Includes all features of V3.
-   - Additionally provides Gene Features and CDS Overlapping Info.
-
-## v3.4 Updates
+#### v3.4 Updates
 
 1. **BED file formatting fixed**  
    Resolved an issue where improper formatting in the BED file caused `bedtools` to throw an error and halt the program.
@@ -112,6 +104,16 @@ Each version has three separate scripts:
    Enhanced the handling and presentation of Bowtie2 alignment results for better readability.
 
 4. **Other minor fixes and improvements**
+
+#### Previous updates
+1. **V3**: 
+   - Allows users to input primer/probe/gRNA sequences and select a set of genome databases.
+   - Upon submission, the app returns the result of the input read aligned against the selected genome using the Bowtie2 software.
+   - Provides an option to change the aligner to Razers3, primarily used for aligning with short reads.
+
+2. **V3.2**:
+   - Includes all features of V3.
+   - Additionally provides Gene Features and CDS Overlapping Info.
 
 #### Note:
 Make sure all the files - app.js, appV3.js, razers3.js, razers3V3.js and 717V2.js have update path according to respective directories. 

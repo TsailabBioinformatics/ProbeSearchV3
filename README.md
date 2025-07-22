@@ -100,6 +100,18 @@ Each version has three separate scripts:
    - Includes all features of V3.
    - Additionally provides Gene Features and CDS Overlapping Info.
 
+## v3.4 Updates
+
+1. **BED file formatting fixed**  
+   Resolved an issue where improper formatting in the BED file caused `bedtools` to throw an error and halt the program.
+
+2. **Transcription Start Site (TSS) information added**  
+   TSS data is now included and displayed as part of the output.
+
+3. **Improved Bowtie2 alignment display**  
+   Enhanced the handling and presentation of Bowtie2 alignment results for better readability.
+
+4. **Other minor fixes and improvements**
 
 #### Note:
 Make sure all the files - app.js, appV3.js, razers3.js, razers3V3.js and 717V2.js have update path according to respective directories. 

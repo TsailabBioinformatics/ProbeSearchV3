@@ -1,4 +1,4 @@
-# ProbeSearchV3
+# PopulusVariantDB (ProbeSearchV3)
 [//]: <TODO: figure out the best way to structure and tranfer `indices/` and `data/` directories>
 
 ## Overview
